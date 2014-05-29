@@ -180,7 +180,19 @@ class File extends DataObject {
 	 * @var array
 	 */
 	protected static $cache_file_fields = null;
-
+	
+	/**
+	 * Template to secure assets if one must be created
+	 * Set to null to ignore .htaccess
+	 * 
+	 * @var string
+	 * @config
+	 */
+	private static $assets_secure_template = array(
+		'Apache' => array('AssetsHTAccess' => '.htaccess'),
+		'IIS' => array('AssetsWebConfig' => 'web.config')
+	);
+		
 	/**
 	 * Replace "[file_link id=n]" shortcode with an anchor tag or link to the file.
 	 * @param $arguments array Arguments to the shortcode
@@ -962,6 +974,42 @@ class File extends DataObject {
 				);
 			}
 			self::config()->class_for_file_extension = array($ext => $class);
+		}
+	}
+	
+	/**
+	 * Ensures the assets directory exists and is secured
+	 * 
+	 * @var string $base Specified location to secure. Will default to ASSETS_PATH
+	 */
+	public static function secure_assets_dir($base = ASSETS_PATH) {
+		// Generate path if doesn't exist
+		if(!file_exists($base)) Filesystem::makeFolder($base);
+		
+		// Ensure this directory is secured
+		$registeredConfigs = self::config()->assets_secure_template;
+		if(empty($registeredConfigs)) return;
+
+		// Find template for current server, falling back to apache
+		$currentServer = empty($_SERVER['SERVER_SOFTWARE']) ? 'Apache' : $_SERVER['SERVER_SOFTWARE'];
+		foreach($registeredConfigs as $server => $config) {
+			if(strpos($currentServer, $server) !== false && $config) {
+				// Skip if file already exists
+				$file = reset($config);
+				$path = $base . DIRECTORY_SEPARATOR . $file;
+				if(file_exists($path)) return;
+				
+				// Generate new file and write
+				$template = key($config);
+				$extensions = array();
+				foreach(self::config()->allowed_extensions as $extension) {
+					if($extension) $extensions[] = new ArrayData(array('Extension' => $extension));
+				}
+				$result = ArrayData::create(array(
+					'AllowedExtensions' => new ArrayList($extensions)
+				))->renderWith($template);
+				file_put_contents($path, $result->forTemplate());
+			}
 		}
 	}
 	

@@ -384,10 +384,14 @@ class FileTest extends SapphireTest {
 		
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	protected $serverSoftware = null;
+	
 	public function setUp() {
 		parent::setUp();
 		
-		if(!file_exists(ASSETS_PATH)) mkdir(ASSETS_PATH);
+		File::secure_assets_dir();
+		
+		$this->serverSoftware = $_SERVER['SERVER_SOFTWARE'];
 
 		/* Create a test folders for each of the fixture references */
 		$folderIDs = $this->allFixtureIDs('Folder');
@@ -416,8 +420,27 @@ class FileTest extends SapphireTest {
 		}
 	}
 	
+	public function testSecureAssetsDir() {
+		// Test htaccess generation
+		$dir = ASSETS_PATH . DIRECTORY_SEPARATOR . 'TestSecure' . DIRECTORY_SEPARATOR . 'Apache';
+		$_SERVER['SERVER_SOFTWARE'] = 'Apache';
+		$this->assertFileNotExists($dir . '/.htaccess');
+		File::secure_assets_dir($dir);
+		$this->assertFileExists($dir . '/.htaccess');
+		
+		// Test web.config generation
+		$dir = ASSETS_PATH . DIRECTORY_SEPARATOR . 'TestSecure' . DIRECTORY_SEPARATOR . 'IIS';
+		$_SERVER['SERVER_SOFTWARE'] = 'IIS';
+		$this->assertFileNotExists($dir . '/web.config');
+		File::secure_assets_dir($dir);
+		$this->assertFileExists($dir . '/web.config');
+	}
+	
 	public function tearDown() {
 		parent::tearDown();
+		
+		// Replaced mocked server type
+		$_SERVER['SERVER_SOFTWARE'] = $this->serverSoftware;
 
 		/* Remove the test files that we've created */
 		$fileIDs = $this->allFixtureIDs('File');
@@ -436,18 +459,19 @@ class FileTest extends SapphireTest {
 		}
 
 		// Remove left over folders and any files that may exist
-		if(file_exists('../assets/FileTest')) Filesystem::removeFolder('../assets/FileTest');
-		if(file_exists('../assets/FileTest-subfolder')) Filesystem::removeFolder('../assets/FileTest-subfolder');
-		if(file_exists('../assets/FileTest.txt')) unlink('../assets/FileTest.txt');
+		if(file_exists(ASSETS_PATH.'/FileTest')) Filesystem::removeFolder(ASSETS_PATH.'/FileTest');
+		if(file_exists(ASSETS_PATH.'/FileTest-subfolder')) Filesystem::removeFolder(ASSETS_PATH.'/FileTest-subfolder');
+		if(file_exists(ASSETS_PATH.'/FileTest.txt')) unlink(ASSETS_PATH.'/FileTest.txt');
+		if(file_exists(ASSETS_PATH.'/TestSecure')) Filesystem::removeFolder(ASSETS_PATH.'/TestSecure');
 
-		if (file_exists("../assets/FileTest-folder-renamed1")) {
-			Filesystem::removeFolder("../assets/FileTest-folder-renamed1");
+		if (file_exists(ASSETS_PATH."/FileTest-folder-renamed1")) {
+			Filesystem::removeFolder(ASSETS_PATH."/FileTest-folder-renamed1");
 		}
-		if (file_exists("../assets/FileTest-folder-renamed2")) {
-			Filesystem::removeFolder("../assets/FileTest-folder-renamed2");
+		if (file_exists(ASSETS_PATH."/FileTest-folder-renamed2")) {
+			Filesystem::removeFolder(ASSETS_PATH."/FileTest-folder-renamed2");
 		}
-		if (file_exists("../assets/FileTest-folder-renamed3")) {
-			Filesystem::removeFolder("../assets/FileTest-folder-renamed3");
+		if (file_exists(ASSETS_PATH."/FileTest-folder-renamed3")) {
+			Filesystem::removeFolder(ASSETS_PATH."/FileTest-folder-renamed3");
 		}
 	}
 

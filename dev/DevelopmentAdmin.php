@@ -73,6 +73,9 @@ class DevelopmentAdmin extends Controller {
 			}
 		}
 		
+		// Ensure filesystem is secured
+		File::secure_assets_dir();
+		
 		// Backwards compat: Default to "draft" stage, which is important
 		// for tasks like dev/build which call DataObject->requireDefaultRecords(),
 		// but also for other administrative tasks which have assumptions about the default stage.

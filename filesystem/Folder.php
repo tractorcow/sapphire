@@ -46,7 +46,7 @@ class Folder extends File {
 	 */
 	public static function find_or_make($folderPath) {
 		// Create assets directory, if it is missing
-		if(!file_exists(ASSETS_PATH)) Filesystem::makeFolder(ASSETS_PATH);
+		self::secure_assets_dir();
 
 		$folderPath = trim(Director::makeRelative($folderPath));
 		// replace leading and trailing slashes

@@ -20,7 +20,7 @@ class ImageTest extends SapphireTest {
 		if($this->skipTest)
 			return;
 	
-		if(!file_exists(ASSETS_PATH)) mkdir(ASSETS_PATH);
+		File::secure_assets_dir();
 
 		// Create a test folders for each of the fixture references
 		$folderIDs = $this->allFixtureIDs('Folder');
