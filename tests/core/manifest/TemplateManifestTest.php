@@ -15,8 +15,8 @@ class TemplateManifestTest extends SapphireTest {
 		parent::setUp();
 
 		$this->base = dirname(__FILE__) . '/fixtures/templatemanifest';
-		$this->manifest      = new SS_TemplateManifest($this->base, 'myproject');
-		$this->manifestTests = new SS_TemplateManifest($this->base, 'myproject', true);
+		$this->manifest      = new TemplateManifest($this->base, 'myproject');
+		$this->manifestTests = new TemplateManifest($this->base, 'myproject', true);
 
 		$this->manifest->regenerate(false);
 		$this->manifestTests->regenerate(false);

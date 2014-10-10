@@ -1,4 +1,7 @@
 <?php
+
+use SilverStripe\Framework\Cache\Cache;
+
 /**
  * Wipe the cache of failed image manipulations. When {@link GDBackend} attempts to resample an image, it will write
  * the attempted manipulation to the cache and remove it from the cache if the resample is successful. The objective
@@ -27,7 +30,7 @@ class CleanImageManipulationCache extends BuildTask {
 
 	/**
 	 * Clear out the image manipulation cache
-	 * @param SS_HTTPRequest $request
+	 * @param HTTPRequest $request
 	 */
 	public function run($request) {
 		$failedManipulations = 0;
@@ -35,7 +38,7 @@ class CleanImageManipulationCache extends BuildTask {
 		$images = DataObject::get('Image');
 
 		if($images && Image::get_backend() == "GDBackend") {
-			$cache = SS_Cache::factory('GDBackend_Manipulations');
+			$cache = Cache::factory('GDBackend_Manipulations');
 
 			foreach($images as $image) {
 				$path = $image->getFullPath();

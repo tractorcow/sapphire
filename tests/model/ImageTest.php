@@ -250,7 +250,7 @@ class ImageTest extends SapphireTest {
 
 	public function testMultipleGenerateManipulationCalls_Regeneration() {
 		$image = $this->objFromFixture('Image', 'imageWithoutTitle');
-		$folder = new SS_FileFinder();
+		$folder = new FileFinder();
 
 		$imageFirst = $image->SetSize(200,200);
 		$this->assertNotNull($imageFirst);

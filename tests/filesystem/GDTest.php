@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Framework\Cache\Cache;
+
 /**
  * Tests for the {@link GD} class.
  *
@@ -16,7 +18,7 @@ class GDTest extends SapphireTest {
 	);
 
 	public function tearDown() {
-		$cache = SS_Cache::factory('GDBackend_Manipulations');
+		$cache = Cache::factory('GDBackend_Manipulations');
 		$cache->clean(Zend_Cache::CLEANING_MODE_ALL);
 	}
 
@@ -164,7 +166,7 @@ class GDTest extends SapphireTest {
 			$gdFailure = new GDBackend_Failure($fullPath, array('SetWidth', 123));
 			$this->fail('GDBackend_Failure should throw an exception when setting image resource');
 		} catch (GDBackend_Failure_Exception $e) {
-			$cache = SS_Cache::factory('GDBackend_Manipulations');
+			$cache = Cache::factory('GDBackend_Manipulations');
 			$key = md5(implode('_', array($fullPath, filemtime($fullPath))));
 
 			$data = unserialize($cache->load($key));

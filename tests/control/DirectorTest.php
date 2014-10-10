@@ -273,7 +273,7 @@ class DirectorTest extends SapphireTest {
 		$_COOKIE = array('somekey' => 'cookievalue');
 
 		$cookies = Injector::inst()->createWithArgs(
-			'Cookie_Backend',
+			'CookieBackend',
 			array(array('somekey' => 'sometestcookievalue'))
 		);
 
@@ -302,7 +302,7 @@ class DirectorTest extends SapphireTest {
 					strtoupper($method),
 					null,
 					null,
-					Injector::inst()->createWithArgs('Cookie_Backend', array($fixture))
+					Injector::inst()->createWithArgs('CookieBackend', array($fixture))
 				);
 
 				$this->assertInstanceOf('SS_HTTPResponse', $getresponse, 'Director::test() returns SS_HTTPResponse');
@@ -518,7 +518,7 @@ class TestRequestFilter implements RequestFilter, TestOnly {
 	public $failPre = false;
 	public $failPost = false;
 
-	public function preRequest(\SS_HTTPRequest $request, \Session $session, \DataModel $model) {
+	public function preRequest(\HTTPRequest $request, \Session $session, \DataModel $model) {
 		++$this->preCalls;
 
 		if ($this->failPre) {
@@ -526,7 +526,7 @@ class TestRequestFilter implements RequestFilter, TestOnly {
 		}
 	}
 
-	public function postRequest(\SS_HTTPRequest $request, \SS_HTTPResponse $response, \DataModel $model) {
+	public function postRequest(\HTTPRequest $request, \HTTPResponse $response, \DataModel $model) {
 		++$this->postCalls;
 
 		if ($this->failPost) {

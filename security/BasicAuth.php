@@ -62,7 +62,7 @@ class BasicAuth {
 
 		// If we've failed the authentication mechanism, then show the login form
 		if(!$member) {
-			$response = new SS_HTTPResponse(null, 401);
+			$response = new HTTPResponse(null, 401);
 			$response->addHeader('WWW-Authenticate', "Basic realm=\"$realm\"");
 
 			if(isset($_SERVER['PHP_AUTH_USER'])) {
@@ -78,7 +78,7 @@ class BasicAuth {
 		}
 
 		if($permissionCode && !Permission::checkMember($member->ID, $permissionCode)) {
-			$response = new SS_HTTPResponse(null, 401);
+			$response = new HTTPResponse(null, 401);
 			$response->addHeader('WWW-Authenticate', "Basic realm=\"$realm\"");
 
 			if(isset($_SERVER['PHP_AUTH_USER'])) {

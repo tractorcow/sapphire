@@ -1,5 +1,7 @@
 <?php
 
+namespace SilverStripe\Framework\Control;
+
 class SSViewerTest extends SapphireTest {
 	public function setUp() {
 		parent::setUp();

@@ -57,7 +57,7 @@ class ChangePasswordForm extends Form {
 	 * Change the password
 	 *
 	 * @param array $data The user submitted data
-	 * @return SS_HTTPResponse
+	 * @return HTTPResponse
 	 */
 	public function doChangePassword(array $data) {
 		if($member = Member::currentUser()) {

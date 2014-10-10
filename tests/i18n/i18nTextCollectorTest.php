@@ -29,17 +29,17 @@ class i18nTextCollectorTest extends SapphireTest {
 
 		// Push a class and template loader running from the fake webroot onto
 		// the stack.
-		$this->manifest = new SS_ClassManifest(
+		$this->manifest = new ClassManifest(
 			$this->alternateBasePath, false, true, false
 		);
 
-		$manifest = new SS_TemplateManifest($this->alternateBasePath, null, false, true);
+		$manifest = new TemplateManifest($this->alternateBasePath, null, false, true);
 		$manifest->regenerate(false);
-		SS_TemplateLoader::instance()->pushManifest($manifest);
+		TemplateLoader::instance()->pushManifest($manifest);
 	}
 
 	public function tearDown() {
-		SS_TemplateLoader::instance()->popManifest();
+		TemplateLoader::instance()->popManifest();
 		parent::tearDown();
 	}
 

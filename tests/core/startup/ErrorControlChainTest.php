@@ -15,7 +15,7 @@ class ErrorControlChainTest_Chain extends ErrorControlChain {
 
 	function executeInSubprocess($includeStderr = false) {
 		// Get the path to the ErrorControlChain class
-		$classpath = SS_ClassLoader::instance()->getItemPath('ErrorControlChain');
+		$classpath = ClassLoader::instance()->getItemPath('ErrorControlChain');
 		$suppression = $this->suppression ? 'true' : 'false';
 
 		// Start building a PHP file that will execute the chain

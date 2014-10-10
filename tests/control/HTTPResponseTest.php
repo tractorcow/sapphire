@@ -6,7 +6,7 @@
 class HTTPResponseTest extends SapphireTest {
 
 	public function testStatusDescriptionStripsNewlines() {
-		$r = new SS_HTTPResponse('my body', 200, "my description \nwith newlines \rand carriage returns");
+		$r = new HTTPResponse('my body', 200, "my description \nwith newlines \rand carriage returns");
 		$this->assertEquals(
 			"my description with newlines and carriage returns",
 			$r->getStatusDescription()
@@ -14,7 +14,7 @@ class HTTPResponseTest extends SapphireTest {
 	}
 
 	public function testHTTPResponseException() {
-		$response = new SS_HTTPResponse("Test", 200, 'OK');
+		$response = new HTTPResponse("Test", 200, 'OK');
 
 		// Confirm that the exception's statusCode and statusDescription take precedence
 		try {

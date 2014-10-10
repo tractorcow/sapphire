@@ -346,7 +346,7 @@ class RequestHandlingTest_Controller extends Controller implements TestOnly {
 	}
 
 	public function throwresponseexception() {
-		throw new SS_HTTPResponse_Exception(new SS_HTTPResponse('There was an internal server error.', 500));
+		throw new SS_HTTPResponse_Exception(new HTTPResponse('There was an internal server error.', 500));
 	}
 
 	public function throwhttperror() {

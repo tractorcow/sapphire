@@ -217,7 +217,7 @@ class Security extends Controller implements TemplateGlobalProvider {
 		if(!$controller) $controller = Controller::curr();
 
 		if(Director::is_ajax()) {
-			$response = ($controller) ? $controller->getResponse() : new SS_HTTPResponse();
+			$response = ($controller) ? $controller->getResponse() : new HTTPResponse();
 			$response->setStatusCode(403);
 			if(!Member::currentUser()) {
 				$response->setBody(_t('ContentController.NOTLOGGEDIN','Not logged in'));
@@ -260,7 +260,7 @@ class Security extends Controller implements TemplateGlobalProvider {
 
 			// Work out the right message to show
 			if($member && $member->exists()) {
-				$response = ($controller) ? $controller->getResponse() : new SS_HTTPResponse();
+				$response = ($controller) ? $controller->getResponse() : new HTTPResponse();
 				$response->setStatusCode(403);
 
 				//If 'alreadyLoggedIn' is not specified in the array, then use the default
@@ -412,7 +412,7 @@ class Security extends Controller implements TemplateGlobalProvider {
 		// If there was an SS_HTTPResponse object returned, then return that
 		else if($eventResults) {
 			foreach($eventResults as $result) {
-				if($result instanceof SS_HTTPResponse) return $result;
+				if($result instanceof HTTPResponse) return $result;
 			}
 		}
 
@@ -551,7 +551,7 @@ class Security extends Controller implements TemplateGlobalProvider {
 	 * Show the "password sent" page, after a user has requested
 	 * to reset their password.
 	 *
-	 * @param SS_HTTPRequest $request The SS_HTTPRequest for this action.
+	 * @param HTTPRequest $request The SS_HTTPRequest for this action.
 	 * @return string Returns the "password sent" page as HTML code.
 	 */
 	public function passwordsent($request) {

@@ -7,11 +7,11 @@ class CookieTest extends SapphireTest {
 	public function setUp() {
 		parent::setUp();
 		Injector::nest();
-		Injector::inst()->registerService(new CookieJar($_COOKIE), 'Cookie_Backend');
+		Injector::inst()->registerService(new CookieJar($_COOKIE), 'CookieBackend');
 	}
 
 	public function tearDown() {
-		//restore the cookie_backend
+		//restore the CookieBackend
 		Injector::unnest();
 		parent::tearDown();
 	}
@@ -30,7 +30,7 @@ class CookieTest extends SapphireTest {
 			'cookie3' => 'test',
 		);
 
-		Injector::inst()->unregisterNamedObject('Cookie_Backend');
+		Injector::inst()->unregisterNamedObject('CookieBackend');
 
 		$this->assertEquals($_COOKIE['cookie1'], Cookie::get('cookie1'));
 		$this->assertEquals($_COOKIE['cookie2'], Cookie::get('cookie2'));
@@ -71,7 +71,7 @@ class CookieTest extends SapphireTest {
 
 		$this->assertEquals('testvalue', Cookie::get('test'));
 
-		Injector::inst()->registerService(new CookieJar(array()), 'Cookie_Backend');
+		Injector::inst()->registerService(new CookieJar(array()), 'CookieBackend');
 
 		$this->assertEmpty(Cookie::get('test'));
 
@@ -84,7 +84,7 @@ class CookieTest extends SapphireTest {
 
 		$inst = new CookieJar(array('test' => 'testvalue'));
 
-		Injector::inst()->registerService($inst, 'Cookie_Backend');
+		Injector::inst()->registerService($inst, 'CookieBackend');
 
 		$this->assertEquals($inst, Cookie::get_inst());
 
@@ -114,10 +114,10 @@ class CookieTest extends SapphireTest {
 	 */
 	public function testExistingVersusNew() {
 		//load with a cookie
-		$cookieJar = new CookieJar(array(
+		$CookieJar = new CookieJar(array(
 			'cookieExisting' => 'i woz here',
 		));
-		Injector::inst()->registerService($cookieJar, 'Cookie_Backend');
+		Injector::inst()->registerService($CookieJar, 'CookieBackend');
 
 		//set a new cookie
 		Cookie::set('cookieNew', 'i am new');
@@ -152,10 +152,10 @@ class CookieTest extends SapphireTest {
 	 */
 	public function testForceExpiry() {
 		//load an existing cookie
-		$cookieJar = new CookieJar(array(
+		$CookieJar = new CookieJar(array(
 			'cookieExisting' => 'i woz here',
 		));
-		Injector::inst()->registerService($cookieJar, 'Cookie_Backend');
+		Injector::inst()->registerService($CookieJar, 'CookieBackend');
 
 		//make sure it's available
 		$this->assertEquals('i woz here', Cookie::get('cookieExisting'));

@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Framework\Cache\Cache;
+
 /**
  * Framework configuration file
  *
@@ -38,7 +40,7 @@ ShortcodeParser::get('default')->register('embed', array('Oembed', 'handle_short
 $_ENV['TMPDIR'] = TEMP_FOLDER; // for *nix
 $_ENV['TMP'] = TEMP_FOLDER; // for Windows
 
-SS_Cache::set_cache_lifetime('GDBackend_Manipulations', null, 100);
+Cache::set_cache_lifetime('GDBackend_Manipulations', null, 100);
 
 // If you don't want to see deprecation errors for the new APIs, change this to 3.2.0-dev.
 Deprecation::notification_version('3.2.0');

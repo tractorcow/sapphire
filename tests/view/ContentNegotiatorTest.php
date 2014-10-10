@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Framework\Control\ContentNegotiator;
+
 class ContentNegotiatorTest extends SapphireTest {
 
 	/**
@@ -41,7 +43,7 @@ class ContentNegotiatorTest extends SapphireTest {
 		// Check that the content negotiator converts to the equally legal formats
 		$negotiator = new ContentNegotiator();
 
-		$response = new SS_HTTPResponse($this->render($tmpl1));
+		$response = new HTTPResponse($this->render($tmpl1));
 		$negotiator->xhtml($response);
 
 		////////////////////////

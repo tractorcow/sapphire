@@ -15,14 +15,14 @@ class i18nSSLegacyAdapterTest extends SapphireTest {
 		Config::inst()->update('Director', 'alternate_base_folder', $this->alternateBasePath);
 
 		// Push a template loader running from the fake webroot onto the stack.
-		$templateManifest = new SS_TemplateManifest($this->alternateBasePath, null, false, true);
+		$templateManifest = new TemplateManifest($this->alternateBasePath, null, false, true);
 		$templateManifest->regenerate(false);
-		SS_TemplateLoader::instance()->pushManifest($templateManifest);
+		TemplateLoader::instance()->pushManifest($templateManifest);
 		$this->_oldTheme = Config::inst()->get('SSViewer', 'theme');
 		Config::inst()->update('SSViewer', 'theme', 'testtheme1');
 
-		$classManifest = new SS_ClassManifest($this->alternateBasePath, false, true, false);
-		SS_ClassLoader::instance()->pushManifest($classManifest);
+		$classManifest = new ClassManifest($this->alternateBasePath, false, true, false);
+		ClassLoader::instance()->pushManifest($classManifest);
 
 		$this->originalLocale = i18n::get_locale();
 
@@ -40,8 +40,8 @@ class i18nSSLegacyAdapterTest extends SapphireTest {
 	}
 
 	public function tearDown() {
-		SS_TemplateLoader::instance()->popManifest();
-		SS_ClassLoader::instance()->popManifest();
+		TemplateLoader::instance()->popManifest();
+		ClassLoader::instance()->popManifest();
 		i18n::set_locale($this->originalLocale);
 		Config::inst()->update('Director', 'alternate_base_folder', null);
 		Config::inst()->update('SSViewer', 'theme', $this->_oldTheme);

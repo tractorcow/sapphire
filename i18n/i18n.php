@@ -3,6 +3,8 @@ require_once 'Zend/Translate.php';
 require_once 'i18nRailsYamlAdapter.php';
 require_once 'i18nSSLegacyAdapter.php';
 
+use SilverStripe\Framework\Cache\Cache;
+
 /**
  * Base-class for storage and retrieval of translated entities.
  *
@@ -2106,7 +2108,7 @@ class i18n extends Object implements TemplateGlobalProvider {
 	public static function get_translators() {
 		if(!Zend_Translate::getCache()) {
 			Zend_Translate::setCache(
-				SS_Cache::factory('i18n', 'Output', array('lifetime' => null, 'automatic_serialization' => true))
+				Cache::factory('i18n', 'Output', array('lifetime' => null, 'automatic_serialization' => true))
 			);
 		}
 
@@ -2236,7 +2238,7 @@ class i18n extends Object implements TemplateGlobalProvider {
 		$locales = array();
 
 		// TODO Inspect themes
-		$modules = SS_ClassLoader::instance()->getManifest()->getModules();
+		$modules = ClassLoader::instance()->getManifest()->getModules();
 
 		foreach($modules as $module) {
 			if(!file_exists("{$module}/lang/")) continue;
@@ -2401,7 +2403,7 @@ class i18n extends Object implements TemplateGlobalProvider {
 	 * @return string
 	 */
 	public static function get_owner_module($name) {
-		$manifest = SS_ClassLoader::instance()->getManifest();
+		$manifest = ClassLoader::instance()->getManifest();
 		$path     = $manifest->getItemPath($name);
 
 		if (!$path) {
@@ -2517,7 +2519,7 @@ class i18n extends Object implements TemplateGlobalProvider {
 		}
 
 		// Get list of module => path pairs, and then just the names
-		$modules = SS_ClassLoader::instance()->getManifest()->getModules();
+		$modules = ClassLoader::instance()->getManifest()->getModules();
 		$moduleNames = array_keys($modules);
 
 		// Remove the "project" module from the list - we'll add it back specially later if needed

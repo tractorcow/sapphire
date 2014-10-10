@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Framework\Cache\Cache;
+
 /**
  * This tracks the current scope for an SSViewer instance. It has three goals:
  *   - Handle entering & leaving sub-scopes in loops and withs
@@ -554,7 +556,7 @@ class SSViewer_DataPresenter extends SSViewer_Scope {
  * 
  * <b>Caching</b>
  *
- * Compiled templates are cached via {@link SS_Cache}, usually on the filesystem.  
+ * Compiled templates are cached via {@link SilverStripe\Framework\Cache\SS_Cache}, usually on the filesystem.
  * If you put ?flush=all on your URL, it will force the template to be recompiled.  
  *
  * @see http://doc.silverstripe.org/themes
@@ -777,7 +779,7 @@ class SSViewer {
 			} else {
 				$theme = null;
 			}
-			$this->chosenTemplates = SS_TemplateLoader::instance()->findTemplates(
+			$this->chosenTemplates = TemplateLoader::instance()->findTemplates(
 				$templateList, $theme
 			);
 		}
@@ -820,7 +822,7 @@ class SSViewer {
 	 * @return boolean
 	 */
 	public static function hasTemplate($templates) {
-		$manifest = SS_TemplateLoader::instance()->getManifest();
+		$manifest = TemplateLoader::instance()->getManifest();
 
 		if(Config::inst()->get('SSViewer', 'theme_enabled')) {
 			$theme = Config::inst()->get('SSViewer', 'theme');
@@ -909,7 +911,7 @@ class SSViewer {
 	 * @return string Full system path to a template file
 	 */
 	public static function getTemplateFileByType($identifier, $type) {
-		$loader = SS_TemplateLoader::instance();
+		$loader = TemplateLoader::instance();
 		if(Config::inst()->get('SSViewer', 'theme_enabled')) {
 			$theme = Config::inst()->get('SSViewer', 'theme');
 		} else {
@@ -966,7 +968,7 @@ class SSViewer {
 	 * @return Zend_Cache_Core
 	 */
 	public function getPartialCacheStore() {
-		return $this->partialCacheStore ? $this->partialCacheStore : SS_Cache::factory('cacheblock');
+		return $this->partialCacheStore ? $this->partialCacheStore : Cache::factory('cacheblock');
 	}
 
 	/**
@@ -1015,7 +1017,7 @@ class SSViewer {
 	/**
 	 * The process() method handles the "meat" of the template processing.
 	 *
-	 * It takes care of caching the output (via {@link SS_Cache}), as well as 
+	 * It takes care of caching the output (via {@link SilverStripe\Framework\Cache\SS_Cache}), as well as
 	 * replacing the special "$Content" and "$Layout" placeholders with their 
 	 * respective subtemplates.
 	 *

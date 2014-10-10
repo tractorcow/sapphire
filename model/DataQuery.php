@@ -133,7 +133,7 @@ class DataQuery {
 
 		// Error checking
 		if(!$tableClasses) {
-			if(!SS_ClassLoader::instance()->hasManifest()) {
+			if(!ClassLoader::instance()->hasManifest()) {
 				user_error("DataObjects have been requested before the manifest is loaded. Please ensure you are not"
 					. " querying the database in _config.php.", E_USER_ERROR);
 			} else {

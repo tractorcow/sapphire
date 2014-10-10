@@ -17,8 +17,8 @@ class TemplateLoaderTest extends SapphireTest {
 	public function setUp() {
 		parent::setUp();
 		$this->base = dirname(__FILE__) . '/fixtures/templatemanifest';
-		$this->manifest = new SS_TemplateManifest($this->base, 'myproject', false, true);
-		$this->loader = new SS_TemplateLoader();
+		$this->manifest = new TemplateManifest($this->base, 'myproject', false, true);
+		$this->loader = new TemplateLoader();
 		$this->refreshLoader();
 	}
 

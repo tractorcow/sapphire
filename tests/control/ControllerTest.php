@@ -379,7 +379,7 @@ class ControllerTest extends FunctionalTest {
 		$response = $this->get("ControllerTest_ContainerController/subcontroller/subaction");
 		$this->assertEquals('subaction', $response->getBody());
 
-		$request = new SS_HTTPRequest(
+		$request = new HTTPRequest(
 			'GET',
 			'ControllerTest_ContainerController/subcontroller/substring/subvieweraction'
 		);

@@ -19,7 +19,7 @@ class BacktraceTest extends SapphireTest {
 		);
 		$this->assertEquals(
 			'MyClass->myFunction(1,more than 20 charact...)',
-			SS_Backtrace::full_func_name($func, true, 20)
+			Backtrace::full_func_name($func, true, 20)
 		);
 	}
 
@@ -57,7 +57,7 @@ class BacktraceTest extends SapphireTest {
 			)
 		);
 
-		$filtered = SS_Backtrace::filter_backtrace($bt);
+		$filtered = Backtrace::filter_backtrace($bt);
 
 		$this->assertEquals('<filtered>', $filtered[0]['args']['password'], 'Filters global functions');
 		$this->assertEquals('<filtered>', $filtered[1]['args']['password'], 'Filters class functions');
