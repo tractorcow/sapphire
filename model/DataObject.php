@@ -590,8 +590,8 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 		$newInstance = new $newClassName(array_merge(
 			$this->record,
 			array(
-				'ClassName' => $originalClass,
-				'RecordClassName' => $originalClass,
+				'ClassName' => $newClassName,
+				'RecordClassName' => $newClassName,
 			)
 		), false, $this->model);
 		
