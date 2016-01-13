@@ -93,9 +93,9 @@ class SS_HTTPResponse {
 	/**
 	 * Create a new HTTP response
 	 *
-	 * @param $body The body of the response
-	 * @param $statusCode The numeric status code - 200, 404, etc
-	 * @param $statusDescription The text to be given alongside the status code.
+	 * @param string $body The body of the response
+	 * @param int $statusCode The numeric status code - 200, 404, etc
+	 * @param string $statusDescription The text to be given alongside the status code.
 	 *  See {@link setStatusCode()} for more information.
 	 */
 	public function __construct($body = null, $statusCode = null, $statusDescription = null) {
@@ -152,7 +152,8 @@ class SS_HTTPResponse {
 	 * @return bool
 	 */
 	public function isError() {
-		return $this->statusCode && ($this->statusCode < 200 || $this->statusCode > 399);
+		$statusCode = $this->getStatusCode();
+		return $statusCode && ($statusCode < 200 || $statusCode > 399);
 	}
 
 	/**
@@ -190,9 +191,11 @@ class SS_HTTPResponse {
 	 * @returns null|string
 	 */
 	public function getHeader($header) {
-		if(isset($this->headers[$header]))
+		if(isset($this->headers[$header])) {
 			return $this->headers[$header];
 		}
+	}
+
 
 	/**
 	 * @return array
@@ -214,19 +217,19 @@ class SS_HTTPResponse {
 	}
 
 	/**
-	 * @param string $dest
+	 * @param string $location
 	 * @param int $code
 	 * @return SS_HTTPRequest $this
 	 */
-	public function redirect($dest, $code=302) {
+	public function redirect($location, $code=302) {
 		if(!in_array($code, self::$redirect_codes)) $code = 302;
 		$this->setStatusCode($code);
-		$this->headers['Location'] = $dest;
+		$this->addHeader('Location', $location);
 		return $this;
 	}
 
 	/**
-	 * Send this HTTPReponse to the browser
+	 * Send this SS_HTTPResponse to the browser
 	 */
 	public function output() {
 		// Attach appropriate X-Include-JavaScript and X-Include-CSS headers
@@ -234,52 +237,77 @@ class SS_HTTPResponse {
 			Requirements::include_in_response($this);
 		}
 
-		if(in_array($this->statusCode, self::$redirect_codes) && headers_sent($file, $line)) {
-			$url = Director::absoluteURL($this->headers['Location'], true);
-			$urlATT = Convert::raw2htmlatt($url);
-			$urlJS = Convert::raw2js($url);
-			$title = Director::isDev()
-				? "{$urlATT}... (output started on {$file}, line {$line})"
-				: "{$urlATT}...";
-			echo <<<EOT
+		if($this->isRedirect() && headers_sent()) {
+			$this->htmlRedirect();
+		} else {
+			$this->outputHeaders();
+			$this->outputBody();
+		}
+	}
+
+	/**
+	 * Generate a browser redirect without setting headers
+	 */
+	protected function htmlRedirect() {
+		$headersSent = headers_sent($file, $line);
+		$location = $this->getHeader('Location');
+		$url = Director::absoluteURL($location);
+		$urlATT = Convert::raw2htmlatt($url);
+		$urlJS = Convert::raw2js($url);
+		$title = (Director::isDev() && $headersSent)
+			? "{$urlATT}... (output started on {$file}, line {$line})"
+			: "{$urlATT}...";
+		echo <<<EOT
 <p>Redirecting to <a href="{$urlATT}" title="Click this link if your browser does not redirect you">{$title}</a></p>
 <meta http-equiv="refresh" content="1; url={$urlATT}" />
 <script type="text/javascript">setTimeout(function(){
-	window.location.href = "{$urlJS}";
+window.location.href = "{$urlJS}";
 }, 50);</script>";
 EOT
-			;
+		;
+	}
+
+	protected function outputHeaders() {
+		$headersSent = headers_sent($file, $line);
+		if(!$headersSent) {
+			$method = sprintf(
+				"%s %d %s",
+				$_SERVER['SERVER_PROTOCOL'],
+				$this->getStatusCode(),
+				$this->getStatusDescription()
+			);
+			header($method);
+			foreach($this->getHeaders() as $header => $value) {
+				header("{$header}: {$value}", true, $this->getStatusCode());
+			}
+		} elseif($this->getStatusCode() >= 300) {
+			// It's critical that these status codes are sent; we need to report a failure if not.
+			user_error(
+				sprintf(
+					"Couldn't set response type to %d because of output on line %s of %s",
+					$this->getStatusCode(), $line, $file
+				),
+				E_USER_WARNING
+			);
+		}
+	}
+
+	/**
+	 * Output body of this response to the browser
+	 */
+	protected function outputBody() {
+		// Only show error pages or generic "friendly" errors if the status code signifies
+		// an error, and the response doesn't have any body yet that might contain
+		// a more specific error description.
+		$body = $this->getBody();
+		if(Director::isLive() && $this->isError() && empty($body)) {
+			$formatter = Injector::inst()->get('FriendlyErrorFormatter');
+			echo $formatter->format(array(
+				'code' => $this->statusCode
+			));
+
 		} else {
-			$line = $file = null;
-			if(!headers_sent($file, $line)) {
-				header($_SERVER['SERVER_PROTOCOL'] . " $this->statusCode " . $this->getStatusDescription());
-				foreach($this->headers as $header => $value) {
-					header("$header: $value", true, $this->statusCode);
-				}
-			} else {
-				// It's critical that these status codes are sent; we need to report a failure if not.
-				if($this->statusCode >= 300) {
-					user_error(
-						"Couldn't set response type to $this->statusCode because " .
-						"of output on line $line of $file",
-						E_USER_WARNING
-					);
-				}
-			}
-
-			// Only show error pages or generic "friendly" errors if the status code signifies
-			// an error, and the response doesn't have any body yet that might contain
-			// a more specific error description.
-			if(Director::isLive() && $this->isError() && !$this->body) {
-				$formatter = Injector::inst()->get('FriendlyErrorFormatter');
-				echo $formatter->format(array(
-					'code' => $this->statusCode
-				));
-
-			} else {
-				echo $this->body;
-			}
-
+			echo $body;
 		}
 	}
 
@@ -290,7 +318,16 @@ EOT
 	 * @return bool
 	 */
 	public function isFinished() {
-		return in_array($this->statusCode, array(301, 302, 303, 304, 305, 307, 401, 403));
+		return in_array($this->getStatusCode(), array(301, 302, 303, 304, 305, 307, 401, 403));
+	}
+
+	/**
+	 * Determine if this response is a redirect
+	 *
+	 * @return bool
+	 */
+	public function isRedirect() {
+		return in_array($this->getStatusCode(), self::$redirect_codes);
 	}
 
 }
