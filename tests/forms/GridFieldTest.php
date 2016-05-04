@@ -127,12 +127,13 @@ class GridFieldTest extends SapphireTest {
 		// Test that values can be set, unset, and inspected
 		$this->assertFalse(isset($obj->State->NotSet));
 		$obj->State->NotSet = false;
-		var_dump($obj->State);
-		var_dump($obj->State->NotSet);
-		var_dump(isset($obj));
-		var_dump(isset($obj->State));
+		$state = $obj->State;
+		var_dump('Calling on $obj->State');
 		var_dump(isset($obj->State->NotSet));
 		var_dump($obj->State->__isset('NotSet'));
+		var_dump('Calling on $state');
+		var_dump(isset($state->NotSet));
+		var_dump($state->__isset('NotSet'));
 		$this->assertTrue(isset($obj->State->NotSet));
 		unset($obj->State->NotSet);
 		$this->assertFalse(isset($obj->State->NotSet));
