@@ -129,11 +129,10 @@ class GridFieldTest extends SapphireTest {
 		$obj->State->NotSet = false;
 		$state = $obj->State;
 		var_dump('Calling on $obj->State');
+		var_dump(isset($obj->State));
 		var_dump(isset($obj->State->NotSet));
-		var_dump($obj->State->__isset('NotSet'));
 		var_dump('Calling on $state');
 		var_dump(isset($state->NotSet));
-		var_dump($state->__isset('NotSet'));
 		$this->assertTrue(isset($obj->State->NotSet));
 		unset($obj->State->NotSet);
 		$this->assertFalse(isset($obj->State->NotSet));
