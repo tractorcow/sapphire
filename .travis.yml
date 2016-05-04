@@ -38,12 +38,7 @@ before_script:
  - php ~/travis-support/travis_setup_php54_webserver.php --if-env BEHAT_TEST
 
 script:
- - "if [ \"$BEHAT_TEST\" = \"\" ] && [ \"$CMS_TEST\" = \"\" ]; then vendor/bin/phpunit framework/tests; fi"
- - "if [ \"$BEHAT_TEST\" = \"\" ] && [ \"$CMS_TEST\" = \"\" ]; then vendor/bin/phpunit framework/admin/tests; fi"
- - "if [ \"$BEHAT_TEST\" = \"1\" ] && [ \"$CMS_TEST\" = \"\" ]; then vendor/bin/behat @framework; fi"
- - "if [ \"$BEHAT_TEST\" = \"\" ] && [ \"$CMS_TEST\" = \"1\" ]; then vendor/bin/phpunit cms/tests; fi"
- - "if [ \"$BEHAT_TEST\" = \"1\" ] && [ \"$CMS_TEST\" = \"1\" ]; then vendor/bin/behat @cms; fi"
- - "if [ \"JS_SANITY_CHECK\" = \"1\" ]; then npm run sanity; fi"
+ - vendor/bin/phpunit framework/tests/forms/GridFieldTest.php
 
 after_failure:
  - php ~/travis-support/travis_upload_artifacts.php --if-env BEHAT_TEST,ARTIFACTS_AWS_SECRET_ACCESS_KEY --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --artifacts-base-url https://s3.amazonaws.com/$ARTIFACTS_S3_BUCKET/
