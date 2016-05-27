@@ -195,10 +195,13 @@ class DBHTMLText extends DBText {
 	}
 
 	public function forTemplate() {
+		return $this->XML();
+	}
+
+	public function XML() {
 		if ($this->processShortcodes) {
 			return ShortcodeParser::get_active()->parse($this->value);
-		}
-		else {
+		} else {
 			return $this->value;
 		}
 	}

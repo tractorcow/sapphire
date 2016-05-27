@@ -33,10 +33,10 @@ class SSViewer_Scope {
 	const UP_INDEX = 4;
 	const CURRENT_INDEX = 5;
 	const ITEM_OVERLAY = 6;
-	
+
 	// The stack of previous "global" items
 	// An indexed array of item, item iterator, item iterator total, pop index, up index, current index & parent overlay
-	private $itemStack = array(); 
+	private $itemStack = array();
 
 	// The current "global" item (the one any lookup starts from)
 	protected $item;
@@ -96,12 +96,12 @@ class SSViewer_Scope {
 			$this->currentIndex) = end($this->itemStack);
 	}
 
-	public function getObj($name, $arguments = null, $forceReturnedObject = true, $cache = false, $cacheName = null) {
+	public function getObj($name, $arguments = [], $cache = false, $cacheName = null) {
 		$on = $this->itemIterator ? $this->itemIterator->current() : $this->item;
-		return $on->obj($name, $arguments, $forceReturnedObject, $cache, $cacheName);
+		return $on->obj($name, $arguments, $cache, $cacheName);
 	}
 
-	public function obj($name, $arguments = null, $forceReturnedObject = true, $cache = false, $cacheName = null) {
+	public function obj($name, $arguments = [], $cache = false, $cacheName = null) {
 		switch ($name) {
 			case 'Up':
 				if ($this->upIndex === null) {
@@ -118,7 +118,7 @@ class SSViewer_Scope {
 				break;
 
 			default:
-				$this->item = $this->getObj($name, $arguments, $forceReturnedObject, $cache, $cacheName);
+				$this->item = $this->getObj($name, $arguments, $cache, $cacheName);
 				$this->itemIterator = null;
 				$this->upIndex = $this->currentIndex ? $this->currentIndex : count($this->itemStack)-1;
 				$this->currentIndex = count($this->itemStack);
@@ -587,7 +587,7 @@ class SSViewer_DataPresenter extends SSViewer_Scope {
 	 * $Up and $Top need to restore the overlay from the parent and top-level
 	 * scope respectively.
 	 */
-	public function obj($name, $arguments = null, $forceReturnedObject = true, $cache = false, $cacheName = null) {
+	public function obj($name, $arguments = [], $cache = false, $cacheName = null) {
 		$overlayIndex = false;
 
 		switch($name) {
@@ -611,13 +611,15 @@ class SSViewer_DataPresenter extends SSViewer_Scope {
 			}
 		}
 
-		return parent::obj($name, $arguments, $forceReturnedObject, $cache, $cacheName);
+		return parent::obj($name, $arguments, $cache, $cacheName);
 	}
 
-	public function getObj($name, $arguments = null, $forceReturnedObject = true, $cache = false, $cacheName = null) {
+	public function getObj($name, $arguments = [], $cache = false, $cacheName = null) {
 		$result = $this->getInjectedValue($name, (array)$arguments);
-		if($result) return $result['obj'];
-		else return parent::getObj($name, $arguments, $forceReturnedObject, $cache, $cacheName);
+		if($result) {
+			return $result['obj'];
+		}
+		return parent::getObj($name, $arguments, $cache, $cacheName);
 	}
 
 	public function __call($name, $arguments) {

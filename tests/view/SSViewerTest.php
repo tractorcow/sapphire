@@ -1544,7 +1544,7 @@ class SSViewerTestFixture extends ViewableData {
 		if($arguments) return $childName . '(' . implode(',', $arguments) . ')';
 		else return $childName;
 	}
-	public function obj($fieldName, $arguments=null, $forceReturnedObject=true, $cache=false, $cacheName=null) {
+	public function obj($fieldName, $arguments=null, $cache=false, $cacheName=null) {
 		$childName = $this->argedName($fieldName, $arguments);
 
 		// Special field name Loop### to create a list
