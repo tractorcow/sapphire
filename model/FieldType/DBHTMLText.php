@@ -14,6 +14,12 @@ use Exception;
  * Represents a large text field that contains HTML content.
  * This behaves similarly to {@link Text}, but the template processor won't escape any HTML content within it.
  *
+ * Options can be specified in a $db config via one of the following:
+ *  - "HTMLText(['shortcodes=true', 'whitelist=meta,link'])"
+ *  - "HTMLText('whitelist=meta,link')"
+ *  - "HTMLText(['shortcodes=true'])"
+ *  - "HTMLText('shortcodes=true')"
+ *
  * @see HTMLVarchar
  * @see Text
  * @see Varchar
@@ -43,16 +49,61 @@ class DBHTMLText extends DBText {
 		'NoHTML' => 'Text',
 	);
 
-	protected $processShortcodes = true;
+	/**
+	 * Enable shortcode parsing on this field
+	 *
+	 * @var bool
+	 */
+	protected $processShortcodes = false;
 
-	protected $whitelist = false;
+	/**
+	 * Check if shortcodes are enabled
+	 *
+	 * @return bool
+	 */
+	public function getProcessShortcodes() {
+		return $this->processShortcodes;
+	}
 
-	public function __construct($name = null, $options = array()) {
-		if(is_string($options)) {
-			$options = array('whitelist' => $options);
+	/**
+	 * Set shortcodes on or off by default
+	 *
+	 * @param bool $process
+	 * @return $this
+	 */
+	public function setProcessShortcodes($process) {
+		$this->processShortcodes = (bool)$process;
+		return $this;
+	}
+
+	/**
+	 * List of html properties to whitelist
+	 *
+	 * @var array
+	 */
+	protected $whitelist = [];
+
+	/**
+	 * List of html properties to whitelist
+	 *
+	 * @return array
+	 */
+	public function getWhitelist() {
+		return $this->whitelist;
+	}
+
+	/**
+	 * Set list of html properties to whitelist
+	 *
+	 * @param array $whitelist
+	 * @return $this
+	 */
+	public function setWhitelist($whitelist) {
+		if(!is_array($whitelist)) {
+			$whitelist = preg_split('/\s*,\s*/', $whitelist);
 		}
-
-		return parent::__construct($name, $options);
+		$this->whitelist = $whitelist;
+		return $this;
 	}
 
 	/**
@@ -69,22 +120,19 @@ class DBHTMLText extends DBText {
 	 *                Text nodes outside of HTML tags are filtered out by default, but may be included by adding
 	 *                the text() directive. E.g. 'link,meta,text()' will allow only <link /> <meta /> and text at
 	 *                the root level.
+	 *
+	 * @return $this
 	 */
 	public function setOptions(array $options = array()) {
-		parent::setOptions($options);
-
 		if(array_key_exists("shortcodes", $options)) {
-			$this->processShortcodes = !!$options["shortcodes"];
+			$this->setProcessShortcodes(!!$options["shortcodes"]);
 		}
 
 		if(array_key_exists("whitelist", $options)) {
-			if(is_array($options['whitelist'])) {
-				$this->whitelist = $options['whitelist'];
-			}
-			else {
-				$this->whitelist = preg_split('/,\s*/', $options['whitelist']);
-			}
+			$this->setWhitelist($options['whitelist']);
 		}
+
+		return parent::setOptions($options);
 	}
 
 	/**

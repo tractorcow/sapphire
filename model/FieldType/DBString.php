@@ -38,9 +38,8 @@ abstract class DBString extends DBField {
 	 *                       {@link StringField::setOptions()} for information on the available options
 	 */
 	public function __construct($name = null, $options = array()) {
-		// Workaround: The singleton pattern calls this constructor with true/1 as the second parameter, so we
-		// must ignore it
-		if(is_array($options)){
+		$options = $this->parseConstructorOptions($options);
+		if($options) {
 			$this->setOptions($options);
 		}
 
@@ -48,20 +47,56 @@ abstract class DBString extends DBField {
 	}
 
 	/**
+	 * Parses the "options" parameter passed to the constructor. This could be a
+	 * string value, or an array of options. Config specification might also
+	 * encode "key=value" pairs in non-associative strings.
+	 *
+	 * @param mixed $options
+	 * @return array The list of parsed options, or empty if there are none
+	 */
+	protected function parseConstructorOptions($options) {
+		if(is_string($options)) {
+			$options = [$options];
+		}
+		if(!is_array($options)) {
+			return [];
+		}
+		$parsed = [];
+		foreach($options as $option => $value) {
+			// Workaround for inability for config args to support associative arrays
+			if(is_numeric($option) && strpos($value, '=') !== false) {
+				list($option, $value) = explode('=', $value);
+				$option = trim($option);
+				$value = trim($value);
+			}
+			// Convert bool values
+			if(strcasecmp($value, 'true') === 0) {
+				$value = true;
+			} elseif(strcasecmp($value, 'false') === 0) {
+				$value = false;
+			}
+			$parsed[$option] = $value;
+		}
+		return $parsed;
+	}
+
+	/**
 	 * Update the optional parameters for this field.
-	 * @param $options array of options
+	 *
+	 * @param array $options Array of options
 	 * The options allowed are:
 	 *   <ul><li>"nullifyEmpty"
 	 *       This is a boolean flag.
 	 *       True (the default) means that empty strings are automatically converted to nulls to be stored in
 	 *       the database. Set it to false to ensure that nulls and empty strings are kept intact in the database.
 	 *   </li></ul>
-	 * @return unknown_type
+	 * @return $this
 	 */
 	public function setOptions(array $options = array()) {
 		if(array_key_exists("nullifyEmpty", $options)) {
 			$this->nullifyEmpty = $options["nullifyEmpty"] ? true : false;
 		}
+		return $this;
 	}
 
 	/**

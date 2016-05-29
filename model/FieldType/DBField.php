@@ -297,7 +297,7 @@ abstract class DBField extends ViewableData {
 	}
 
 	public function HTML(){
-		return Convert::raw2xml($this->value);
+		return $this->XML();
 	}
 
 	public function XML(){
