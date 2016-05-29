@@ -385,6 +385,6 @@ DBG;
 	}
 
 	public function __toString() {
-		return $this->forTemplate();
+		return (string)$this->forTemplate();
 	}
 }
