@@ -27,8 +27,8 @@ Injector:
     class: SilverStripe\Model\FieldType\DBHTMLText
   ShortcodeHTMLText:
     class: SilverStripe\Model\FieldType\DBHTMLText
-    calls:
-      - [setProcessShortcodes, [true]]
+    properties:
+      ProcessShortcodes: true
   HTMLVarchar:
     class: SilverStripe\Model\FieldType\DBHTMLVarchar
   Int:

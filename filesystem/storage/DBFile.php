@@ -107,7 +107,7 @@ class DBFile extends DBComposite implements AssetContainer, Thumbnail {
 	 *
 	 * @return string
 	 */
-	public function forTemplate() {
+	public function XML() {
 		return $this->getTag() ?: '';
 	}
 

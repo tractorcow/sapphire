@@ -1,4 +1,7 @@
 <?php
+
+use SilverStripe\Model\FieldType\DBField;
+
 /**
  * See {@link SSViewerTest->testCastingHelpers()} for more tests related to casting and ViewableData behaviour,
  * from a template-parsing perspective.
@@ -76,11 +79,6 @@ class ViewableDataTest extends SapphireTest {
 		$this->assertEquals('&lt;foo&gt;', $caster->XML_val('castedUnsafeXML'));
 	}
 
-	public function testUncastedXMLVal() {
-		$caster = new ViewableDataTest_Castable();
-		//$this->assertEquals($caster->XML_val('uncastedZeroValue'), 0);
-	}
-
 	public function testArrayCustomise() {
 		$viewableData    = new ViewableDataTest_Castable();
 		$newViewableData = $viewableData->customise(array (
@@ -123,29 +121,6 @@ class ViewableDataTest extends SapphireTest {
 		$this->assertTrue(is_object($obj));
 		// and the string field should have the value of the raw string:
 		$this->assertEquals('SomeTitleValue', $obj->forTemplate());
-	}
-
-	public function testRAWVal() {
-		$data = new ViewableDataTest_Castable();
-		$data->test = 'This &amp; This';
-		//$this->assertEquals($data->RAW_val('test'), 'This & This');
-	}
-
-	public function testSQLVal() {
-		$data = new ViewableDataTest_Castable();
-		//$this->assertEquals($data->SQL_val('test'), 'test');
-	}
-
-	public function testJSVal() {
-		$data = new ViewableDataTest_Castable();
-		$data->test = '"this is a test"';
-		//$this->assertEquals($data->JS_val('test'), '\"this is a test\"');
-	}
-
-	public function testATTVal() {
-		$data = new ViewableDataTest_Castable();
-		$data->test = '"this is a test"';
-		//$this->assertEquals($data->ATT_val('test'), '&quot;this is a test&quot;');
 	}
 
 	public function testCastingClass() {

@@ -104,6 +104,7 @@ class ViewableData extends Object implements IteratorAggregate {
 	 * @param mixed $value
 	 */
 	public function __set($property, $value) {
+		$this->objCacheClear();
 		if($this->hasMethod($method = "set$property")) {
 			$this->$method($value);
 		} else {
@@ -155,9 +156,12 @@ class ViewableData extends Object implements IteratorAggregate {
 	 *
 	 * @param string $field
 	 * @param mixed $value
+	 * @return $this
 	 */
 	public function setField($field, $value) {
+		$this->objCacheClear();
 		$this->$field = $value;
+		return $this;
 	}
 
 	// -----------------------------------------------------------------------------------------------------------------
@@ -337,6 +341,16 @@ class ViewableData extends Object implements IteratorAggregate {
 	 */
 	protected function objCacheSet($key, $value) {
 		$this->objCache[$key] = $value;
+		return $this;
+	}
+
+	/**
+	 * Clear object cache
+	 *
+	 * @return $this
+	 */
+	protected function objCacheClear() {
+		$this->objCache = [];
 		return $this;
 	}
 

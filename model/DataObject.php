@@ -1915,7 +1915,7 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 		$result = $result->alterDataQuery(function($query) use ($extraFields) {
 			$query->setQueryParam('Component.ExtraFields', $extraFields);
 		});
-		
+
 		if($this->model) {
 			$result->setDataModel($this->model);
 		}
@@ -2642,9 +2642,10 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 	 *
 	 * @param string $fieldName Name of the field
 	 * @param mixed $val New field value
-	 * @return DataObject $this
+	 * @return $this
 	 */
 	public function setField($fieldName, $val) {
+		$this->objCacheClear();
 		//if it's a has_one component, destroy the cache
 		if (substr($fieldName, -2) == 'ID') {
 			unset($this->components[substr($fieldName, 0, -2)]);
