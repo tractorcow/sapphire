@@ -72,7 +72,7 @@ to a template, SilverStripe will ensure that the object is wrapped in the correc
 	class Page extends SiteTree {
 
 		private static $casting = array(
-			'MyCustomMethod' => 'HTMLText' 
+			'MyCustomMethod' => 'HTMLFragment' 
 		);
 
 		public function MyCustomMethod() {
