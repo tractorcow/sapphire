@@ -50,15 +50,10 @@ trait CustomMethods {
 			$this->defineMethods();
 		}
 
-		$config = $this->getMethodConfig($method);
+		$config = $this->getExtraMethodConfig($method);
 		if(empty($config)) {
 			throw new BadMethodCallException(
 				"Object->__call(): the method '$method' does not exist on '$class'"
-			);
-		} if(is_string($config)) {
-			// if __call is handling a 'real' method then something is wrong
-			throw new BadMethodCallException(
-				"Object->__call() cannot expose non-public method '$method' on '$class'"
 			);
 		}
 
@@ -143,28 +138,20 @@ trait CustomMethods {
 	 * @return bool
 	 */
 	public function hasMethod($method) {
-		$class = get_class($this);
-		return method_exists($this, $method) || isset(self::$extra_methods[$class][strtolower($method)]);
+		return method_exists($this, $method) || $this->getExtraMethodConfig($method);
 	}
 
 	/**
 	 * Get meta-data details on a named method
 	 *
 	 * @param array $method
-	 * @return null|string|array Null if the method isn't defined, a literal string
-	 * if method is defined directly on this object, or an array of extra_method information
-	 * for this method.
+	 * @return array List of custom method details, if defined for this method
 	 */
-	protected function getMethodConfig($method) {
+	protected function getExtraMethodConfig($method) {
 		$class = get_class($this);
-		if(method_exists($this, $method)) {
-			return $method;
-		}
-
 		if(isset(self::$extra_methods[$class][strtolower($method)])) {
 			return self::$extra_methods[$class][strtolower($method)];
 		}
-
 		return null;
 	}
 
