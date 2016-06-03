@@ -94,7 +94,7 @@ class DBFile extends DBComposite implements AssetContainer, Thumbnail {
 		'Title' => 'Varchar',
 		'MimeType' => 'Varchar',
 		'String' => 'Text',
-		'Tag' => 'HTMLText',
+		'Tag' => 'HTMLFragment',
 		'Size' => 'Varchar'
 	);
 

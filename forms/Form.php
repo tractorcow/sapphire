@@ -1,4 +1,6 @@
 <?php
+use SilverStripe\Model\FieldType\DBHTMLText;
+
 /**
  * Base class for all forms.
  * The form class is an extensible base for all forms on a SilverStripe application.  It can be used
@@ -207,12 +209,12 @@ class Form extends RequestHandler {
 	);
 
 	private static $casting = array(
-		'AttributesHTML' => 'HTMLText',
-		'FormAttributes' => 'HTMLText',
+		'AttributesHTML' => 'HTMLFragment',
+		'FormAttributes' => 'HTMLFragment',
 		'MessageType' => 'Text',
-		'Message' => 'HTMLText',
+		'Message' => 'HTMLFragment',
 		'FormName' => 'Text',
-		'Legend' => 'HTMLText',
+		'Legend' => 'HTMLFragment',
 	);
 
 	/**
@@ -1680,7 +1682,7 @@ class Form extends RequestHandler {
 	 * Render this form using the given template, and return the result as a string
 	 * You can pass either an SSViewer or a template name
 	 * @param string|array $template
-	 * @return HTMLText
+	 * @return DBHTMLText
 	 */
 	public function renderWithoutActionButton($template) {
 		$custom = $this->customise(array(

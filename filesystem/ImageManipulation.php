@@ -515,7 +515,7 @@ trait ImageManipulation {
 	 */
 	public function IconTag() {
 		return DBField::create_field(
-			'HTMLText',
+			'HTMLFragment',
 			'<img src="' . Convert::raw2att($this->getIcon()) . '" />'
 		);
 	}

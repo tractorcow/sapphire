@@ -15,10 +15,10 @@ use Exception;
  * This behaves similarly to {@link Text}, but the template processor won't escape any HTML content within it.
  *
  * Options can be specified in a $db config via one of the following:
- *  - "HTMLText(['shortcodes=true', 'whitelist=meta,link'])"
- *  - "HTMLText('whitelist=meta,link')"
- *  - "HTMLText(['shortcodes=true'])"
- *  - "HTMLText('shortcodes=true')"
+ *  - "HTMLFragment(['shortcodes=true', 'whitelist=meta,link'])"
+ *  - "HTMLFragment('whitelist=meta,link')"
+ *  - "HTMLFragment(['shortcodes=true'])". "HTMLText" is also a synonym for this.
+ *  - "HTMLFragment('shortcodes=true')"
  *
  * @see HTMLVarchar
  * @see Text
@@ -31,22 +31,22 @@ class DBHTMLText extends DBText {
 	private static $escape_type = 'xml';
 
 	private static $casting = array(
-		"AbsoluteLinks" => "HTMLText",
-		"BigSummary" => "HTMLText",
-		"ContextSummary" => "HTMLText",
-		"FirstParagraph" => "HTMLText",
-		"FirstSentence" => "HTMLText",
-		"LimitCharacters" => "HTMLText",
-		"LimitSentences" => "HTMLText",
-		"Lower" => "HTMLText",
-		"LowerCase" => "HTMLText",
-		"Summary" => "HTMLText",
-		"Upper" => "HTMLText",
-		"UpperCase" => "HTMLText",
-		'EscapeXML' => 'HTMLText',
-		'LimitWordCount' => 'HTMLText',
-		'LimitWordCountXML' => 'HTMLText',
-		'NoHTML' => 'Text',
+		"AbsoluteLinks" => "HTMLFragment",
+		"BigSummary" => "HTMLFragment",
+		"ContextSummary" => "HTMLFragment",
+		"FirstParagraph" => "HTMLFragment",
+		"FirstSentence" => "HTMLFragment",
+		"LimitCharacters" => "HTMLFragment",
+		"LimitSentences" => "HTMLFragment",
+		"Lower" => "HTMLFragment",
+		"LowerCase" => "HTMLFragment",
+		"Summary" => "HTMLFragment",
+		"Upper" => "HTMLFragment",
+		"UpperCase" => "HTMLFragment",
+		"EscapeXML" => "HTMLFragment",
+		"LimitWordCount" => "HTMLFragment",
+		"LimitWordCountXML" => "HTMLFragment",
+		"NoHTML" => "Text",
 	);
 
 	/**

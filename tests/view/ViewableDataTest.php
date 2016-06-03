@@ -15,7 +15,7 @@ class ViewableDataTest extends SapphireTest {
 		$htmlString = "&quot;";
 		$textString = '"';
 
-		$htmlField = DBField::create_field('HTMLText', $textString);
+		$htmlField = DBField::create_field('HTMLFragment', $textString);
 
 		$this->assertEquals($textString, $htmlField->forTemplate());
 		$this->assertEquals($htmlString, $htmlField->obj('HTMLATT')->forTemplate());
@@ -24,8 +24,8 @@ class ViewableDataTest extends SapphireTest {
 		$this->assertEquals($htmlString, $htmlField->obj('ATT')->forTemplate());
 		$this->assertEquals($textString, $htmlField->obj('RAW')->forTemplate());
 		$this->assertEquals('\"', $htmlField->obj('JS')->forTemplate());
-		$this->assertEquals($htmlString, $htmlField->obj('HTML')->forTemplate());
-		$this->assertEquals($htmlString, $htmlField->obj('XML')->forTemplate());
+		$this->assertEquals($textString, $htmlField->obj('HTML')->forTemplate());
+		$this->assertEquals($textString, $htmlField->obj('XML')->forTemplate());
 
 		$textField = DBField::create_field('Text', $textString);
 		$this->assertEquals($htmlString, $textField->forTemplate());
@@ -44,9 +44,6 @@ class ViewableDataTest extends SapphireTest {
 
 		$this->assertInstanceOf('ViewableDataTest_RequiresCasting', $caster->obj('alwaysCasted'));
 		$this->assertInstanceOf('ViewableData_Caster', $caster->obj('noCastingInformation'));
-
-		$this->assertInstanceOf('ViewableDataTest_RequiresCasting', $caster->obj('alwaysCasted', null, false));
-		//$this->assertNotInstanceOf('ViewableData_Caster', $caster->obj('noCastingInformation', null, false));
 	}
 
 	public function testFailoverRequiresCasting() {
@@ -55,17 +52,10 @@ class ViewableDataTest extends SapphireTest {
 		$container->setFailover($caster);
 
 		$this->assertInstanceOf('ViewableDataTest_RequiresCasting', $container->obj('alwaysCasted'));
-		$this->assertInstanceOf('ViewableDataTest_RequiresCasting', $caster->obj('alwaysCasted', null, false));
+		$this->assertInstanceOf('ViewableDataTest_RequiresCasting', $caster->obj('alwaysCasted'));
 
-		/* @todo This currently fails, because the default_cast static variable is always taken from the topmost
-		 * 	     object, not the failover object the field actually came from. Should we fix this, or declare current
-		 *       behaviour as correct?
-		 *
-		 * $this->assertInstanceOf('ViewableData_Caster', $container->obj('noCastingInformation'));
-		 * $this->assertNotInstanceOf('ViewableData_Caster', $caster->obj('noCastingInformation', null, false));
-		 */
-		$this->assertInstanceOf('Text', $container->obj('noCastingInformation'));
-		$this->assertInstanceOf('ViewableData_Caster', $caster->obj('noCastingInformation', null, false));
+		$this->assertInstanceOf('ViewableData_Caster', $container->obj('noCastingInformation'));
+		$this->assertInstanceOf('ViewableData_Caster', $caster->obj('noCastingInformation'));
 	}
 
 	public function testCastingXMLVal() {
@@ -74,8 +64,8 @@ class ViewableDataTest extends SapphireTest {
 		$this->assertEquals('casted', $caster->XML_val('alwaysCasted'));
 		$this->assertEquals('casted', $caster->XML_val('noCastingInformation'));
 
-		// test automatic escaping is only applied by casted classes
-		//$this->assertEquals('<foo>', $caster->XML_val('unsafeXML'));
+		// Test automatic escaping is applied even to fields with no 'casting'
+		$this->assertEquals('casted', $caster->XML_val('unsafeXML'));
 		$this->assertEquals('&lt;foo&gt;', $caster->XML_val('castedUnsafeXML'));
 	}
 
@@ -86,7 +76,7 @@ class ViewableDataTest extends SapphireTest {
 			'alwaysCasted' => 'overwritten'
 		));
 
-		//$this->assertEquals('test', $viewableData->XML_val('test'));
+		$this->assertEquals('test', $viewableData->XML_val('test'));
 		$this->assertEquals('casted', $viewableData->XML_val('alwaysCasted'));
 
 		$this->assertEquals('overwritten', $newViewableData->XML_val('test'));
@@ -100,7 +90,7 @@ class ViewableDataTest extends SapphireTest {
 		$viewableData    = new ViewableDataTest_Castable();
 		$newViewableData = $viewableData->customise(new ViewableDataTest_RequiresCasting());
 
-		//$this->assertEquals('test', $viewableData->XML_val('test'));
+		$this->assertEquals('test', $viewableData->XML_val('test'));
 		$this->assertEquals('casted', $viewableData->XML_val('alwaysCasted'));
 
 		$this->assertEquals('overwritten', $newViewableData->XML_val('test'));
@@ -205,7 +195,8 @@ class ViewableDataTest_Castable extends ViewableData {
 
 	private static $casting = array (
 		'alwaysCasted'    => 'ViewableDataTest_RequiresCasting',
-		'castedUnsafeXML' => 'ViewableData_UnescaptedCaster'
+		'castedUnsafeXML' => 'ViewableData_UnescaptedCaster',
+		'test' => 'Text',
 	);
 
 	public $test = 'test';

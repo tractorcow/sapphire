@@ -1,6 +1,7 @@
 <?php
 
 use SilverStripe\Model\FieldType\DBField;
+use SilverStripe\Model\FieldType\DBHTMLText;
 
 /**
  * RSSFeed class
@@ -191,7 +192,7 @@ class RSSFeed extends ViewableData {
 	 *
 	 * TODO: Pass $response object to ->outputToBrowser() to loosen dependence on global state for easier testing/prototyping so dev can inject custom SS_HTTPResponse instance.
 	 *
-	 * @return	HTMLText
+	 * @return DBHTMLText
 	 */
 	public function outputToBrowser() {
 		$prevState = Config::inst()->get('SSViewer', 'source_file_comments');
@@ -277,6 +278,10 @@ class RSSFeed_Entry extends ViewableData {
 
 	/**
 	 * Create a new RSSFeed entry.
+	 * @param $entry
+	 * @param $titleField
+	 * @param $descriptionField
+	 * @param $authorField
 	 */
 	public function __construct($entry, $titleField, $descriptionField,
 											$authorField) {
@@ -303,7 +308,7 @@ class RSSFeed_Entry extends ViewableData {
 	 * @return string Returns the description of the entry.
 	 */
 	public function Description() {
-		return $this->rssField($this->descriptionField, 'HTMLText');
+		return $this->rssField($this->descriptionField, 'HTMLFragment');
 	}
 
 	/**

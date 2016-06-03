@@ -1,6 +1,7 @@
 <?php
 
 use SilverStripe\Model\FieldType\DBField;
+use SilverStripe\Model\FieldType\DBHTMLText;
 
 /**
  * Displays a {@link SS_List} in a grid format.
@@ -285,8 +286,7 @@ class GridField extends FormField {
 	 * Returns the whole gridfield rendered with all the attached components.
 	 *
 	 * @param array $properties
-	 *
-	 * @return HTMLText
+	 * @return string
 	 */
 	public function FieldHolder($properties = array()) {
 		Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui.css');
@@ -507,14 +507,11 @@ class GridField extends FormField {
 			$header . "\n" . $footer . "\n" . $body
 		);
 
-		$field = DBField::create_field('HTMLText', FormField::create_tag(
+		return FormField::create_tag(
 			'fieldset',
 			$fieldsetAttributes,
 			$content['before'] . $table . $content['after']
-		));
-		$field->setOptions(array('shortcodes' => false));
-
-		return $field;
+		);
 	}
 
 	/**
@@ -591,7 +588,7 @@ class GridField extends FormField {
 		} else {
 			$classes[] = 'odd';
 		}
-		
+
 		$this->extend('updateNewRowClasses', $classes, $total, $index, $record);
 
 		return $classes;
@@ -599,8 +596,7 @@ class GridField extends FormField {
 
 	/**
 	 * @param array $properties
-	 *
-	 * @return HTMLText
+	 * @return string
 	 */
 	public function Field($properties = array()) {
 		$this->extend('onBeforeRender', $this);

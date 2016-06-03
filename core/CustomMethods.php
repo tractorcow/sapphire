@@ -50,40 +50,46 @@ trait CustomMethods {
 			$this->defineMethods();
 		}
 
-		// Validate method being invked
-		$method = strtolower($method);
-		if(!isset(self::$extra_methods[$class][$method])) {
-			// Please do not change the exception code number below.
-			$class = get_class($this);
-			throw new BadMethodCallException("Object->__call(): the method '$method' does not exist on '$class'", 2175);
+		$config = $this->getMethodConfig($method);
+		if(empty($config)) {
+			throw new BadMethodCallException(
+				"Object->__call(): the method '$method' does not exist on '$class'"
+			);
+		} if(is_string($config)) {
+			// if __call is handling a 'real' method then something is wrong
+			throw new BadMethodCallException(
+				"Object->__call() cannot expose non-public method '$method' on '$class'"
+			);
 		}
 
-		$config = self::$extra_methods[$class][$method];
-
 		switch(true) {
-			case isset($config['property']) :
+			case isset($config['property']) : {
 				$obj = $config['index'] !== null ?
 					$this->{$config['property']}[$config['index']] :
 					$this->{$config['property']};
 
-				if($obj) {
-					if(!empty($config['callSetOwnerFirst'])) $obj->setOwner($this);
+				if ($obj) {
+					if (!empty($config['callSetOwnerFirst'])) {
+						$obj->setOwner($this);
+					}
 					$retVal = call_user_func_array(array($obj, $method), $arguments);
-					if(!empty($config['callSetOwnerFirst'])) $obj->clearOwner();
+					if (!empty($config['callSetOwnerFirst'])) {
+						$obj->clearOwner();
+					}
 					return $retVal;
 				}
 
-				if(!empty($this->destroyed)) {
+				if (!empty($this->destroyed)) {
 					throw new BadMethodCallException(
 						"Object->__call(): attempt to call $method on a destroyed $class object"
 					);
 				} else {
 					throw new BadMethodCallException(
 						"Object->__call(): $class cannot pass control to $config[property]($config[index])."
-							. ' Perhaps this object was mistakenly destroyed?'
+						. ' Perhaps this object was mistakenly destroyed?'
 					);
 				}
-
+			}
 			case isset($config['wrap']) :
 				array_unshift($arguments, $config['method']);
 				return call_user_func_array(array($this, $config['wrap']), $arguments);
@@ -107,8 +113,6 @@ trait CustomMethods {
 	 * @uses addMethodsFrom()
 	 */
 	protected function defineMethods() {
-		$class = get_class($this);
-
 		// Define from all registered callbacks
 		foreach($this->extra_method_registers as $callback) {
 			call_user_func($callback);
@@ -141,6 +145,27 @@ trait CustomMethods {
 	public function hasMethod($method) {
 		$class = get_class($this);
 		return method_exists($this, $method) || isset(self::$extra_methods[$class][strtolower($method)]);
+	}
+
+	/**
+	 * Get meta-data details on a named method
+	 *
+	 * @param array $method
+	 * @return null|string|array Null if the method isn't defined, a literal string
+	 * if method is defined directly on this object, or an array of extra_method information
+	 * for this method.
+	 */
+	protected function getMethodConfig($method) {
+		$class = get_class($this);
+		if(method_exists($this, $method)) {
+			return $method;
+		}
+
+		if(isset(self::$extra_methods[$class][strtolower($method)])) {
+			return self::$extra_methods[$class][strtolower($method)];
+		}
+
+		return null;
 	}
 
 	/**

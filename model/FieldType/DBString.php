@@ -24,7 +24,7 @@ abstract class DBString extends DBField {
 		"LimitCharacters" => "Text",
 		"LimitCharactersToClosestWord" => "Text",
 		'LimitWordCount' => 'Text',
-		'LimitWordCountXML' => 'HTMLText',
+		'LimitWordCountXML' => 'HTMLFragment',
 		"LowerCase" => "Text",
 		"UpperCase" => "Text",
 		'NoHTML' => 'Text',
@@ -33,8 +33,8 @@ abstract class DBString extends DBField {
 	/**
 	 * Construct a string type field with a set of optional parameters.
 	 *
-	 * @param $name string The name of the field
-	 * @param $options array An array of options e.g. array('nullifyEmpty'=>false).  See
+	 * @param string $name string The name of the field
+	 * @param array $options array An array of options e.g. array('nullifyEmpty'=>false).  See
 	 *                       {@link StringField::setOptions()} for information on the available options
 	 */
 	public function __construct($name = null, $options = array()) {

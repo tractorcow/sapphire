@@ -1,4 +1,5 @@
 <?php
+use SilverStripe\Model\FieldType\DBHTMLText;
 
 /**
  * Controllers are the cornerstone of all site functionality in SilverStripe. The {@link Director}
@@ -261,7 +262,7 @@ class Controller extends RequestHandler implements TemplateGlobalProvider {
 	 * @param SS_HTTPRequest $request
 	 * @param string $action
 	 *
-	 * @return HTMLText|SS_HTTPResponse
+	 * @return DBHTMLText|SS_HTTPResponse
 	 */
 	protected function handleAction($request, $action) {
 		foreach($request->latestParams() as $k => $v) {
@@ -300,6 +301,7 @@ class Controller extends RequestHandler implements TemplateGlobalProvider {
 
 	/**
 	 * @param array $urlParams
+	 * @return $this
 	 */
 	public function setURLParams($urlParams) {
 		$this->urlParams = $urlParams;
@@ -371,8 +373,7 @@ class Controller extends RequestHandler implements TemplateGlobalProvider {
 	 * controller object with the template returned by {@link getViewer()}.
 	 *
 	 * @param string $action
-	 *
-	 * @return HTMLText
+	 * @return DBHTMLText
 	 */
 	public function defaultAction($action) {
 		return $this->getViewer($action)->process($this);

@@ -8,7 +8,7 @@
 class CMSSecurity extends Security {
 
 	private static $casting = array(
-		'Title' => 'HTMLText'
+		'Title' => 'HTMLFragment'
 	);
 
 	private static $allowed_actions = array(

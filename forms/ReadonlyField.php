@@ -40,7 +40,7 @@ class ReadonlyField extends FormField {
 
 	/**
 	 * @param array $properties
-	 * @return HTMLText
+	 * @return string
 	 */
 	public function Field($properties = array()) {
 		// Include a hidden field in the HTML

@@ -1,6 +1,7 @@
 <?php
 
 use SilverStripe\Model\FieldType\DBField;
+use SilverStripe\Model\FieldType\DBHTMLText;
 
 /**
  * This tracks the current scope for an SSViewer instance. It has three goals:
@@ -1178,7 +1179,7 @@ class SSViewer implements Flushable {
 	 * @param array|null $arguments - arguments to an included template
 	 * @param Object $inheritedScope - the current scope of a parent template including a sub-template
 	 *
-	 * @return HTMLText Parsed template output.
+	 * @return DBHTMLText Parsed template output.
 	 */
 	public function process($item, $arguments = null, $inheritedScope = null) {
 		SSViewer::$topLevel[] = $item;
@@ -1243,7 +1244,7 @@ class SSViewer implements Flushable {
 			}
 		}
 
-		return DBField::create_field('HTMLText', $output, null, array('shortcodes' => false));
+		return DBField::create_field('HTMLFragment', $output);
 	}
 
 	/**

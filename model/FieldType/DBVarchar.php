@@ -10,9 +10,9 @@ use Config;
 /**
  * Class Varchar represents a variable-length string of up to 255 characters, designed to store raw text
  *
- * @see HTMLText
- * @see HTMLVarchar
- * @see Text
+ * @see DBHTMLText
+ * @see DBHTMLVarchar
+ * @see DBText
  *
  * @package framework
  * @subpackage model

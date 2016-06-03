@@ -107,7 +107,7 @@ class File extends DataObject implements ShortcodeHandler, AssetContainer, Thumb
 	);
 
 	private static $casting = array (
-		'TreeTitle' => 'HTMLText'
+		'TreeTitle' => 'HTMLFragment'
 	);
 
 	/**
@@ -623,7 +623,10 @@ class File extends DataObject implements ShortcodeHandler, AssetContainer, Thumb
 	public function collateDescendants($condition, &$collator) {
 		if($children = $this->Children()) {
 			foreach($children as $item) {
-				if(!$condition || eval("return $condition;")) $collator[] = $item;
+				/** @var File $item */
+				if(!$condition || eval("return $condition;")) {
+					$collator[] = $item;
+				}
 				$item->collateDescendants($condition, $collator);
 			}
 			return true;

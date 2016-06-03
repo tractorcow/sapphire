@@ -20,8 +20,8 @@ use Config;
  * );
  * </code>
  *
- * @see HTMLText
- * @see HTMLVarchar
+ * @see DBHTMLText
+ * @see DBHTMLVarchar
  * @see Varchar
  *
  * @package framework
@@ -40,7 +40,7 @@ class DBText extends DBString {
 		"Summary" => "Text",
 		'EscapeXML' => 'Text',
 		'LimitWordCount' => 'Text',
-		'LimitWordCountXML' => 'HTMLText',
+		'LimitWordCountXML' => 'HTMLFragment',
 	);
 
 	/**

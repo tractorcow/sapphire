@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Model\FieldType\DBField;
+
 /**
  * Represents a field in a form.
  *
@@ -256,19 +258,19 @@ class FormField extends RequestHandler {
 	protected $schemaData = [];
 
 	private static $casting = array(
-		'FieldHolder' => 'HTMLText',
-		'Field' => 'HTMLText',
-		'AttributesHTML' => 'HTMLText',
-		'Value' => 'HTMLText',
+		'FieldHolder' => 'HTMLFragment',
+		'Field' => 'HTMLFragment',
+		'AttributesHTML' => 'HTMLFragment',
+		'Value' => 'HTMLFragment',
 		'extraClass' => 'Text',
 		'ID' => 'Text',
 		'isReadOnly' => 'Boolean',
 		'HolderID' => 'Text',
-		'Title' => 'HTMLText',
-		'RightTitle' => 'HTMLText',
+		'Title' => 'HTMLFragment',
+		'RightTitle' => 'HTMLFragment',
 		'MessageType' => 'Text',
-		'Message' => 'HTMLText',
-		'Description' => 'HTMLText',
+		'Message' => 'HTMLFragment',
+		'Description' => 'HTMLFragment',
 	);
 
 	/**
@@ -941,7 +943,6 @@ class FormField extends RequestHandler {
 	 * such as an input tag.
 	 *
 	 * @param array $properties
-	 *
 	 * @return string
 	 */
 	public function Field($properties = array()) {

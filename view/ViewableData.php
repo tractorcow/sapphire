@@ -169,11 +169,15 @@ class ViewableData extends Object implements IteratorAggregate {
 	/**
 	 * Add methods from the {@link ViewableData::$failover} object, as well as wrapping any methods prefixed with an
 	 * underscore into a {@link ViewableData::cachedCall()}.
+	 *
+	 * @throws LogicException
 	 */
 	public function defineMethods() {
+		if($this->failover && !is_object($this->failover)) {
+			throw new LogicException("ViewableData::\$failover set to a non-object");
+		}
 		if($this->failover) {
-			if(is_object($this->failover)) $this->addMethodsFrom('failover');
-			else user_error("ViewableData::\$failover set to a non-object", E_USER_WARNING);
+			$this->addMethodsFrom('failover');
 
 			if(isset($_REQUEST['debugfailover'])) {
 				Debug::message("$this->class created with a failover class of {$this->failover->class}");
@@ -235,7 +239,9 @@ class ViewableData extends Object implements IteratorAggregate {
 			return $specs[$field];
 		}
 
-		// Check failover
+		// If no specific cast is declared, fall back to failover.
+		// Note that if there is a failover, the default_cast will always
+		// be drawn from this object instead of the top level object.
 		$failover = $this->getFailover();
 		if($failover) {
 			$cast = $failover->castingHelper($field);

@@ -1581,7 +1581,7 @@ class SSViewerTest_ViewableData extends ViewableData implements TestOnly {
 
 	private static $casting = array(
 		'TextValue' => 'Text',
-		'HTMLValue' => 'HTMLText'
+		'HTMLValue' => 'HTMLFragment'
 	);
 
 	public function methodWithOneArgument($arg1) {
@@ -1633,14 +1633,14 @@ class SSViewerTest_GlobalProvider implements TemplateGlobalProvider, TestOnly {
 
 	public static function get_template_global_variables() {
 		return array(
-			'SSViewerTest_GlobalHTMLFragment' => array('method' => 'get_html', 'casting' => 'HTMLText'),
+			'SSViewerTest_GlobalHTMLFragment' => array('method' => 'get_html', 'casting' => 'HTMLFragment'),
 			'SSViewerTest_GlobalHTMLEscaped' => array('method' => 'get_html'),
 
 			'SSViewerTest_GlobalAutomatic',
 			'SSViewerTest_GlobalReferencedByString' => 'get_reference',
 			'SSViewerTest_GlobalReferencedInArray' => array('method' => 'get_reference'),
 
-			'SSViewerTest_GlobalThatTakesArguments' => array('method' => 'get_argmix', 'casting' => 'HTMLText')
+			'SSViewerTest_GlobalThatTakesArguments' => array('method' => 'get_argmix', 'casting' => 'HTMLFragment')
 
 		);
 	}

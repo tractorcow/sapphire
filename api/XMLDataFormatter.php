@@ -1,4 +1,6 @@
 <?php
+use SilverStripe\Model\FieldType\DBHTMLText;
+
 /**
  * @package framework
  * @subpackage formatters
@@ -50,18 +52,21 @@ class XMLDataFormatter extends DataFormatter {
 		$xml = "<$className href=\"$objHref.xml\">\n";
 		foreach($this->getFieldsForObj($obj) as $fieldName => $fieldType) {
 			// Field filtering
-			if($fields && !in_array($fieldName, $fields)) continue;
-			$fieldValue = $obj->obj($fieldName)->forTemplate();
-			if(!mb_check_encoding($fieldValue,'utf-8')) $fieldValue = "(data is badly encoded)";
+			if($fields && !in_array($fieldName, $fields)) {
+				continue;
+			}
+			$fieldObject = $obj->obj($fieldName);
+			$fieldValue = $fieldObject->forTemplate();
+			if(!mb_check_encoding($fieldValue, 'utf-8')) {
+				$fieldValue = "(data is badly encoded)";
+			}
 
 			if(is_object($fieldValue) && is_subclass_of($fieldValue, 'Object') && $fieldValue->hasMethod('toXML')) {
 				$xml .= $fieldValue->toXML();
 			} else {
-				if('HTMLText' == $fieldType) {
+				if($fieldObject instanceof DBHTMLText) {
 					// Escape HTML values using CDATA
 					$fieldValue = sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $fieldValue));
-				} else {
-					$fieldValue = Convert::raw2xml($fieldValue);
 				}
 				$xml .= "<$fieldName>$fieldValue</$fieldName>\n";
 			}

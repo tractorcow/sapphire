@@ -166,7 +166,7 @@ class RSSFeedTest_ItemD extends ViewableData {
 	// ItemD test fields - all fields use casting but Content & AltContent cast as HTMLText
 	private static $casting = array(
 		'Title' => 'Varchar',
-		'Content' => 'HTMLText'
+		'Content' => 'HTMLFragment',
 	);
 
 	public $Title = 'ItemD';

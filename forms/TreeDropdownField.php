@@ -204,7 +204,7 @@ class TreeDropdownField extends FormField {
 	}
 
 	/**
-	 * @return HTMLText
+	 * @return string
 	 */
 	public function Field($properties = array()) {
 		Requirements::add_i18n_javascript(FRAMEWORK_DIR . '/client/lang');
@@ -260,6 +260,7 @@ class TreeDropdownField extends FormField {
 	 *
 	 * @param SS_HTTPRequest $request
 	 * @return string
+	 * @throws Exception
 	 */
 	public function tree(SS_HTTPRequest $request) {
 		// Array sourceObject is an explicit list of values - construct a "flat tree"
@@ -384,8 +385,9 @@ class TreeDropdownField extends FormField {
 	 * Marking public function for the tree, which combines different filters sensibly.
 	 * If a filter function has been set, that will be called. And if search text is set,
 	 * filter on that too. Return true if all applicable conditions are true, false otherwise.
-	 * @param $node
-	 * @return unknown_type
+	 * 
+	 * @param mixed $node
+	 * @return bool
 	 */
 	public function filterMarking($node) {
 		if ($this->filterCallback && !call_user_func($this->filterCallback, $node)) return false;

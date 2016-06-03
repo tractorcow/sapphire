@@ -26,7 +26,7 @@ class TextareaField extends FormField {
 	 */
 	private static $casting = array(
 		'Value' => 'Text',
-		'ValueEntities' => 'HTMLText',
+		'ValueEntities' => 'HTMLFragment',
 	);
 
 	/**

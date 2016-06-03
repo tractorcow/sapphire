@@ -25,10 +25,10 @@ Injector:
     class: SilverStripe\Model\FieldType\DBForeignKey
   HTMLText:
     class: SilverStripe\Model\FieldType\DBHTMLText
-  ShortcodeHTMLText:
-    class: SilverStripe\Model\FieldType\DBHTMLText
     properties:
       ProcessShortcodes: true
+  HTMLFragment:
+    class: SilverStripe\Model\FieldType\DBHTMLText
   HTMLVarchar:
     class: SilverStripe\Model\FieldType\DBHTMLVarchar
   Int:
