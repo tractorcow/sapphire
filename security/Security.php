@@ -648,7 +648,8 @@ class Security extends Controller implements TemplateGlobalProvider {
 	 * - t: plaintext token
 	 *
 	 * @param Member $member Member object associated with this link.
-	 * @param string $autoLoginHash The auto login token.
+	 * @param string $autologinToken The auto login token.
+	 * @return string
 	 */
 	public static function getPasswordResetLink($member, $autologinToken) {
 		$autologinToken = urldecode($autologinToken);

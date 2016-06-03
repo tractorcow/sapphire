@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Model\FieldType\DBField;
+
 class SSViewerTest extends SapphireTest {
 
 	/**
@@ -792,25 +794,21 @@ after')
 			$t = SSViewer::fromString('$HTMLValue.RAW')->process($vd)
 		);
 		$this->assertEquals(
-			'&lt;b&gt;html&lt;/b&gt;',
+			'<b>html</b>',
 			$t = SSViewer::fromString('$HTMLValue.XML')->process($vd)
 		);
 
-		// Uncasted value (falls back to ViewableData::$default_cast="HTMLText")
-		$vd = new SSViewerTest_ViewableData(); // TODO Fix caching
+		// Uncasted value (falls back to ViewableData::$default_cast="Text")
+		$vd = new SSViewerTest_ViewableData();
 		$vd->UncastedValue = '<b>html</b>';
 		$this->assertEquals(
-			'<b>html</b>',
+			'&lt;b&gt;html&lt;/b&gt;',
 			$t = SSViewer::fromString('$UncastedValue')->process($vd)
 		);
-		$vd = new SSViewerTest_ViewableData(); // TODO Fix caching
-		$vd->UncastedValue = '<b>html</b>';
 		$this->assertEquals(
 			'<b>html</b>',
 			$t = SSViewer::fromString('$UncastedValue.RAW')->process($vd)
 		);
-		$vd = new SSViewerTest_ViewableData(); // TODO Fix caching
-		$vd->UncastedValue = '<b>html</b>';
 		$this->assertEquals(
 			'&lt;b&gt;html&lt;/b&gt;',
 			$t = SSViewer::fromString('$UncastedValue.XML')->process($vd)
@@ -1208,8 +1206,14 @@ after')
 			</html>');
 		$tmpl = new SSViewer($tmplFile);
 		$obj = new ViewableData();
-		$obj->InsertedLink = '<a class="inserted" href="#anchor">InsertedLink</a>';
-		$obj->ExternalInsertedLink = '<a class="external-inserted" href="http://google.com#anchor">ExternalInsertedLink</a>';
+		$obj->InsertedLink = DBField::create_field(
+			'HTMLFragment',
+			'<a class="inserted" href="#anchor">InsertedLink</a>'
+		);
+		$obj->ExternalInsertedLink = DBField::create_field(
+			'HTMLFragment',
+			'<a class="external-inserted" href="http://google.com#anchor">ExternalInsertedLink</a>'
+		);
 		$result = $tmpl->process($obj);
 		$this->assertContains(
 			'<a class="inserted" href="' . $base . '#anchor">InsertedLink</a>',
@@ -1256,7 +1260,10 @@ after')
 			</html>');
 		$tmpl = new SSViewer($tmplFile);
 		$obj = new ViewableData();
-		$obj->InsertedLink = '<a class="inserted" href="#anchor">InsertedLink</a>';
+		$obj->InsertedLink = DBField::create_field(
+			'HTMLFragment',
+			'<a class="inserted" href="#anchor">InsertedLink</a>'
+		);
 		$result = $tmpl->process($obj);
 
 		$code = <<<'EOC'
@@ -1578,6 +1585,8 @@ class SSViewerTestFixture extends ViewableData {
 }
 
 class SSViewerTest_ViewableData extends ViewableData implements TestOnly {
+
+	private static $default_cast = 'Text';
 
 	private static $casting = array(
 		'TextValue' => 'Text',
