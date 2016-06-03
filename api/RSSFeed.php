@@ -321,20 +321,16 @@ class RSSFeed_Entry extends ViewableData {
 	}
 
 	/**
-	 * Return the named field as an obj() call from $this->failover.
-	 * Default to the given class if there's no casting information.
+	 * Return the safely casted field
+	 *
+	 * @param string $fieldName Name of field
+	 * @return string
 	 */
-	public function rssField($fieldName, $defaultClass = 'Varchar') {
+	public function rssField($fieldName) {
 		if($fieldName) {
-			if($this->failover->castingHelper($fieldName)) {
-				$value = $this->failover->$fieldName;
-				$obj = $this->failover->obj($fieldName);
-				$obj->setValue($value);
-				return $obj;
-			} else {
-				return DBField::create_field($defaultClass, $this->failover->XML_val($fieldName), $fieldName);
-			}
+			return $this->failover->obj($fieldName);
 		}
+		return null;
 	}
 
 	/**

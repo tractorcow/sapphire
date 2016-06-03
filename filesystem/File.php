@@ -449,12 +449,11 @@ class File extends DataObject implements ShortcodeHandler, AssetContainer, Thumb
 				CompositeField::create(
 					new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
 					new ReadonlyField("Size", _t('AssetTableField.SIZE','File size') . ':', $this->getSize()),
-					ReadonlyField::create(
+					HTMLReadonlyField::create(
 						'ClickableURL',
 						_t('AssetTableField.URL','URL'),
 						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Link())
-					)
-						->setDontEscape(true),
+					),
 					new DateField_Disabled("Created", _t('AssetTableField.CREATED','First uploaded') . ':'),
 					new DateField_Disabled("LastEdited", _t('AssetTableField.LASTEDIT','Last changed') . ':')
 				)

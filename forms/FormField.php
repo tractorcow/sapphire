@@ -130,12 +130,6 @@ class FormField extends RequestHandler {
 	 */
 	private static $default_classes = [];
 
-
-	/**
-	 * @var bool
-	 */
-	public $dontEscape;
-
 	/**
 	 * Right-aligned, contextual label for the field.
 	 *
@@ -261,7 +255,7 @@ class FormField extends RequestHandler {
 		'FieldHolder' => 'HTMLFragment',
 		'Field' => 'HTMLFragment',
 		'AttributesHTML' => 'HTMLFragment',
-		'Value' => 'HTMLFragment',
+		'Value' => 'Text',
 		'extraClass' => 'Text',
 		'ID' => 'Text',
 		'isReadOnly' => 'Boolean',
@@ -498,13 +492,14 @@ class FormField extends RequestHandler {
 	}
 
 	/**
-	 * @param string $title
+	 * Set the title of this formfield.
+	 * Note: This expects escaped HTML.
 	 *
+	 * @param string $title Escaped HTML for title
 	 * @return $this
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
-
 		return $this;
 	}
 
@@ -519,13 +514,14 @@ class FormField extends RequestHandler {
 	}
 
 	/**
-	 * @param string $rightTitle
+	 * Sets the right title for this formfield
+	 * Note: This expects escaped HTML.
 	 *
+	 * @param string $rightTitle Escaped HTML for title
 	 * @return $this
 	 */
 	public function setRightTitle($rightTitle) {
 		$this->rightTitle = $rightTitle;
-
 		return $this;
 	}
 
@@ -1379,29 +1375,7 @@ class FormField extends RequestHandler {
 			$field->setAttribute($attributeKey, $attributeValue);
 		}
 
-		$field->dontEscape = $this->dontEscape;
-
 		return $field;
-	}
-
-	/**
-	 * Determine if escaping of this field should be disabled
-	 *
-	 * @param bool $dontEscape
-	 * @return $this
-	 */
-	public function setDontEscape($dontEscape) {
-		$this->dontEscape = $dontEscape;
-		return $this;
-	}
-
-	/**
-	 * Determine if escaping is disabled
-	 *
-	 * @return bool
-	 */
-	public function getDontEscape() {
-		return $this->dontEscape;
 	}
 
 	/**

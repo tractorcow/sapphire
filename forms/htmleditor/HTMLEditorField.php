@@ -11,6 +11,10 @@ use Embed\Embed;
  */
 class HTMLEditorField extends TextareaField {
 
+	private static $casting = [
+		'Value' => 'HTMLText',
+	];
+
 	/**
 	 * Use TinyMCE's GZIP compressor
 	 *
@@ -125,10 +129,7 @@ class HTMLEditorField extends TextareaField {
 	 * @return HTMLEditorField_Readonly
 	 */
 	public function performReadonlyTransformation() {
-		$field = $this->castedCopy('HTMLEditorField_Readonly');
-		$field->dontEscape = true;
-
-		return $field;
+		return $this->castedCopy('HTMLEditorField_Readonly');
 	}
 
 	public function performDisabledTransformation() {
@@ -147,7 +148,11 @@ class HTMLEditorField extends TextareaField {
  * @package forms
  * @subpackage fields-formattedinput
  */
-class HTMLEditorField_Readonly extends ReadonlyField {
+class HTMLEditorField_Readonly extends HTMLReadonlyField {
+	private static $casting = [
+		'Value' => 'HTMLText'
+	];
+
 	public function Field($properties = array()) {
 		$valforInput = $this->value ? Convert::raw2att($this->value) : "";
 		return "<span class=\"readonly typography\" id=\"" . $this->id() . "\">"

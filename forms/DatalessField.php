@@ -57,6 +57,7 @@ class DatalessField extends FormField {
 
 	/**
 	 * @param bool $bool
+	 * @return $this
 	 */
 	public function setAllowHTML($bool) {
 		$this->allowHTML = $bool;

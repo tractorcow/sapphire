@@ -1,4 +1,5 @@
 <?php
+use SilverStripe\Model\FieldType\DBField;
 
 /**
  * Read-only complement of {@link DropdownField}.
@@ -45,10 +46,7 @@ class LookupField extends MultiSelectField {
 		if($mapped) {
 			$attrValue = implode(', ', array_values($mapped));
 
-			if(!$this->dontEscape) {
-				$attrValue = Convert::raw2xml($attrValue);
-			}
-
+			$attrValue = Convert::raw2xml($attrValue);
 			$inputValue = implode(', ', array_values($values));
 		} else {
 			$attrValue = '<i>('._t('FormField.NONE', 'none').')</i>';
@@ -56,7 +54,7 @@ class LookupField extends MultiSelectField {
 		}
 
 		$properties = array_merge($properties, array(
-			'AttrValue' => $attrValue,
+			'AttrValue' => DBField::create_field('HTMLFragment', $attrValue),
 			'InputValue' => $inputValue
 		));
 

@@ -17,23 +17,79 @@ class DBHTMLVarchar extends DBVarchar {
 
 	private static $escape_type = 'xml';
 
-	protected $processShortcodes = true;
+	/**
+	 * Enable shortcode parsing on this field
+	 *
+	 * @var bool
+	 */
+	protected $processShortcodes = false;
 
+	/**
+	 * Check if shortcodes are enabled
+	 *
+	 * @return bool
+	 */
+	public function getProcessShortcodes() {
+		return $this->processShortcodes;
+	}
+
+	/**
+	 * Set shortcodes on or off by default
+	 *
+	 * @param bool $process
+	 * @return $this
+	 */
+	public function setProcessShortcodes($process) {
+		$this->processShortcodes = (bool)$process;
+		return $this;
+	}
+	/**
+	 * @param array $options
+	 *
+	 * Options accepted in addition to those provided by Text:
+	 *
+	 *   - shortcodes: If true, shortcodes will be turned into the appropriate HTML.
+	 *                 If false, shortcodes will not be processed.
+	 *
+	 *   - whitelist: If provided, a comma-separated list of elements that will be allowed to be stored
+	 *                (be careful on relying on this for XSS protection - some seemingly-safe elements allow
+	 *                attributes that can be exploited, for instance <img onload="exploiting_code();" src="..." />)
+	 *                Text nodes outside of HTML tags are filtered out by default, but may be included by adding
+	 *                the text() directive. E.g. 'link,meta,text()' will allow only <link /> <meta /> and text at
+	 *                the root level.
+	 *
+	 * @return $this
+	 */
 	public function setOptions(array $options = array()) {
-		parent::setOptions($options);
-
 		if(array_key_exists("shortcodes", $options)) {
-			$this->processShortcodes = !!$options["shortcodes"];
+			$this->setProcessShortcodes(!!$options["shortcodes"]);
 		}
+
+		return parent::setOptions($options);
 	}
 
 	public function forTemplate() {
+		return $this->XML();
+	}
+
+	public function XML() {
 		if ($this->processShortcodes) {
 			return ShortcodeParser::get_active()->parse($this->value);
-		}
-		else {
+		} else {
 			return $this->value;
 		}
+	}
+
+	/**
+	 * Safely escape for XML string
+	 *
+	 * @return string
+	 */
+	public function CDATA() {
+		return sprintf(
+			'<![CDATA[%s]]>',
+			str_replace(']]>', ']]]]><![CDATA[>', $this->XML())
+		);
 	}
 
 	public function exists() {

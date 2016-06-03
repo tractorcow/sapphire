@@ -254,6 +254,18 @@ class DBHTMLText extends DBText {
 		}
 	}
 
+	/**
+	 * Safely escape for XML string
+	 *
+	 * @return string
+	 */
+	public function CDATA() {
+		return sprintf(
+			'<![CDATA[%s]]>',
+			str_replace(']]>', ']]]]><![CDATA[>', $this->XML())
+		);
+	}
+
 	public function prepValueForDB($value) {
 		return parent::prepValueForDB($this->whitelistContent($value));
 	}

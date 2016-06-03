@@ -70,6 +70,7 @@ abstract class DBField extends ViewableData {
 
 	private static $casting = array(
 		'ATT' => 'HTMLFragment',
+		'CDATA' => 'HTMLFragment',
 		'HTML' => 'HTMLFragment',
 		'HTMLATT' => 'HTMLFragment',
 		'JS' => 'HTMLFragment',
@@ -301,6 +302,16 @@ abstract class DBField extends ViewableData {
 	public function XML(){
 		return Convert::raw2xml($this->value);
 	}
+
+	/**
+	 * Safely escape for XML string
+	 *
+	 * @return string
+	 */
+	public function CDATA() {
+		return $this->XML();
+	}
+
 
 	/**
 	 * Returns the value to be set in the database to blank this field.

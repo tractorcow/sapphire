@@ -1,4 +1,6 @@
 <?php
+use SilverStripe\Model\FieldType\DBField;
+
 /**
  * Represents a number of fields which are selectable by a radio
  * button that appears at the beginning of each item.  Using CSS, you can
@@ -81,7 +83,7 @@ class SelectionGroup extends CompositeField {
 
 			$itemID = $this->ID() . '_' . (++$count);
 			$extra = array(
-				"RadioButton" => FormField::create_tag(
+				"RadioButton" => DBField::create_field('HTMLFragment', FormField::create_tag(
 					'input',
 					array(
 						'class' => 'selector',
@@ -91,12 +93,12 @@ class SelectionGroup extends CompositeField {
 						'value' => $item->getValue(),
 						'checked' => $checked
 					)
-				),
-				"RadioLabel" => FormField::create_tag(
+				)),
+				"RadioLabel" => DBField::create_field('HTMLFragment', FormField::create_tag(
 					'label',
 					array('for' => $itemID),
 					$item->getTitle()
-				),
+				)),
 				"Selected" => $firstSelected,
 			);
 			$newItems[] = $item->customise($extra);
