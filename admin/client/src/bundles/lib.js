@@ -1,6 +1,5 @@
-// Expose the libraries as global for other modules to access
-// Note that this jQuerysynjQuerytax requires the use of Webpack and expose-loader
-// These are order-dependent - earlier items should not depend on later ones
+// Expose the libraries as globals for other modules to access
+// Note that these are order-dependent - earlier items should not depend on later ones
 require('expose?DeepFreezeStrict!deep-freeze-strict');
 require('expose?React!react');
 require('expose?Tether!tether');
@@ -11,6 +10,8 @@ require('expose?ReduxThunk!redux-thunk');
 require('expose?ReactRouter!react-router');
 require('expose?ReactRouterRedux!react-router-redux');
 
+// jQuery plugins require that the jQuery object is exposed as a global
+// webpack.ProvidePlugin is used to ensure that jQuery and $ are provided to all includes
 require('script!../../../../thirdparty/jquery/jquery.js');
 require('expose?jQuery!jQuery');
 
@@ -26,18 +27,29 @@ require('babel-polyfill');
 require('../../../../thirdparty/jquery-ondemand/jquery.ondemand.js');
 require('../../../../thirdparty/jquery-entwine/dist/jquery.entwine-dist.js');
 require('../legacy/sspath.js');
+
 require('../../../../thirdparty/jquery-ui/jquery-ui.js');
+require('../../../../thirdparty/jquery-ui-themes/smoothness/jquery-ui.css');
+
+
 require('../../../../thirdparty/jquery-cookie/jquery.cookie.js');
 require('../../../../thirdparty/jquery-query/jquery.query.js');
 require('../../../../thirdparty/jquery-form/jquery.form.js');
+
 require('../../../thirdparty/jquery-notice/jquery.notice.js');
+require('../../../thirdparty/jquery-notice/jquery.notice.css');
+
 require('../../../thirdparty/jsizes/lib/jquery.sizes.js');
 require('../../../thirdparty/jlayout/lib/jlayout.border.js');
 require('../../../thirdparty/jlayout/lib/jquery.jlayout.js');
+
 require('../../../../thirdparty/jstree/jquery.jstree.js');
+require('../../../../thirdparty//jstree/themes/apple/style.css');
+
 require('../../../thirdparty/jquery-hoverIntent/jquery.hoverIntent.js');
 require('../../../../thirdparty/jquery-changetracker/lib/jquery.changetracker.js');
 require('../../../../client/src/legacy/TreeDropdownField.js');
+
 require('../../../../client/src/legacy/DateField.js');
 require('../../../../client/src/legacy/HtmlEditorField.js');
 require('../../../../client/src/legacy/TabSet.js');
@@ -74,3 +86,6 @@ require('expose?Router!lib/Router');
 require('expose?AbstractChosen!exports?AbstractChosen!chosen/coffee/lib/abstract-chosen.coffee');
 require('expose?SelectParser!exports?SelectParser!chosen/coffee/lib/select-parser.coffee');
 require('chosen/coffee/chosen.jquery.coffee');
+
+// Ensure that styles are built as part of this webpack bundle
+require('../styles/bundle.scss');
