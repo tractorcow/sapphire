@@ -82,7 +82,7 @@ const config = [
       'react-addons-test-utils': 'ReactAddonsTestUtils',
       'react-dom': 'ReactDom',
       tether: 'Tether',
-      'react-bootstrap-4': 'ReactBootstrap4',
+      'react-bootstrap-ss': 'ReactBootstrap4',
       'react-redux': 'ReactRedux',
       'react-router-redux': 'ReactRouterRedux',
       'react-router': 'ReactRouter',

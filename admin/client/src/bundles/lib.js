@@ -15,7 +15,7 @@ require('expose?ReactRouterRedux!react-router-redux');
 require('script!../../../../thirdparty/jquery/jquery.js');
 require('expose?jQuery!jQuery');
 
-require('expose?ReactBootstrap4!react-bootstrap-4');
+require('expose?ReactBootstrap4!react-bootstrap-ss');
 require('expose?ReactAddonsCssTransitionGroup!react-addons-css-transition-group');
 require('expose?ReactAddonsTestUtils!react-addons-test-utils');
 require('expose?Page!page.js');
