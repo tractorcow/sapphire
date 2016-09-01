@@ -171,6 +171,8 @@ const config = [
         `${PATHS.FRAMEWORK_CSS_SRC}/legacy/AssetUploadField.scss`,
       'client/dist/styles/UploadField':
         `${PATHS.FRAMEWORK_CSS_SRC}/legacy/UploadField.scss`,
+      [`${PATHS.INSTALL_CSS_DIST}/install`]:
+        `${PATHS.INSTALL_CSS_SRC}/install.scss`,
     },
     output: {
       path: './',
