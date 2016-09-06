@@ -15,6 +15,7 @@ require('../legacy/AddToCampaignForm.js');
 
 // Fields used by core legacy UIs, or available to users
 // To do: determine better way of using webpack to pull in optional javascript
+require('../../../../client/src/legacy/AssetUploadField.js');
 require('../../../../client/src/legacy/ConfirmedPasswordField.js');
 require('../../../../client/src/legacy/UploadField.js');
 require('../../../../client/src/legacy/SelectionGroup.js');
