@@ -167,6 +167,8 @@ const config = [
         `${PATHS.ADMIN_CSS_SRC}/editor.scss`,
       'client/dist/styles/GridField_print':
         `${PATHS.FRAMEWORK_CSS_SRC}/legacy/GridField_print.scss`,
+      'client/dist/styles/debug':
+        `${PATHS.FRAMEWORK_CSS_SRC}/legacy/debug.scss`,
       'client/dist/styles/AssetUploadField':
         `${PATHS.FRAMEWORK_CSS_SRC}/legacy/AssetUploadField.scss`,
       'client/dist/styles/UploadField':
