@@ -3,6 +3,7 @@
 namespace SilverStripe\Control;
 
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injector;
@@ -305,11 +306,7 @@ class Director implements TemplateGlobalProvider
     public static function handleRequest(HTTPRequest $request)
     {
         Injector::inst()->registerService($request, HTTPRequest::class);
-
         $rules = Director::config()->uninherited('rules');
-
-        // Get global middlewares
-        $middlewares = Director::config()->uninherited('middlewares') ?: [];
 
         // Default handler - mo URL rules matched, so return a 404 error.
         $handler = function () {
@@ -325,18 +322,6 @@ class Director implements TemplateGlobalProvider
                     $controllerOptions = array('Controller' => $controllerOptions);
                 }
             }
-
-            // Add controller-specific middlewares
-            if (isset($controllerOptions['Middlewares'])) {
-                // Force to array
-                if (!is_array($controllerOptions['Middlewares'])) {
-                    $controllerOptions['Middlewares'] = [$controllerOptions['Middlewares']];
-                }
-                $middlewares = array_merge($middlewares, $controllerOptions['Middlewares']);
-            }
-
-            // Remove null middlewares (may be included due to limitatons of config yml)
-            $middlewares = array_filter($middlewares);
 
             // Match pattern
             $arguments = $request->match($pattern, true);
@@ -366,61 +351,37 @@ class Director implements TemplateGlobalProvider
                 $controllerObj = Injector::inst()->create($controller);
 
                 // Handler for calling a controller
-                $handler = function ($request) use ($controllerObj) {
+                $handler = function (HTTPRequest $request) use ($controllerObj) {
                     try {
                         return $controllerObj->handleRequest($request);
                     } catch (HTTPResponse_Exception $responseException) {
                         return $responseException->getResponse();
                     }
                 };
+
+                // Add controller-specific middlewares
+                if (isset($controllerOptions['Middleware'])) {
+                    /** @var HTTPMiddleware $routeMiddleware */
+                    $routeMiddleware = Injector::inst()->get($controllerOptions['Middleware']);
+                    $next = $handler;
+                    $handler = function (HTTPRequest $request) use ($next, $routeMiddleware) {
+                        return $routeMiddleware->process($request, $next);
+                    };
+                }
                 break;
             }
         }
 
-        // Call the handler with the given middlewares
-        $response = self::callWithMiddlewares(
-            $request,
-            $middlewares,
-            $handler
-        );
-
-        // Note that if a different request was previously registered, this will now be lost
-        // In these cases it's better to use Kernel::nest() prior to kicking off a nested request
-        Injector::inst()->unregisterNamedObject(HTTPRequest::class);
-
-        return $response;
-    }
-
-    /**
-     * Call the given request handler with the given middlewares
-     * Middlewares are specified as Injector service names
-     *
-     * @param $request The request to pass to the handler
-     * @param $middlewareNames The services names of the middlewares to apply
-     * @param $handler The request handler
-     */
-    protected static function callWithMiddlewares(HTTPRequest $request, array $middlewareNames, callable $handler)
-    {
-        $next = $handler;
-
-        if ($middlewareNames) {
-            $middlewares = array_map(
-                function ($name) {
-                    return Injector::inst()->get($name);
-                },
-                $middlewareNames
-            );
-
-            // Reverse middlewares
-            /** @var HTTPMiddleware $middleware */
-            foreach (array_reverse($middlewares) as $middleware) {
-                $next = function ($request) use ($middleware, $next) {
-                    return $middleware->process($request, $next);
-                };
-            }
+        // Get director specific middleware handler
+        /** @var HTTPMiddleware $middleware */
+        $middleware = Injector::inst()->get(HTTPMiddleware::class.'.director');
+        try {
+            return $middleware->process($request, $handler);
+        } finally {
+            // Note that if a different request was previously registered, this will now be lost
+            // In these cases it's better to use Kernel::nest() prior to kicking off a nested request
+            Injector::inst()->unregisterNamedObject(HTTPRequest::class);
         }
-
-        return $next($request);
     }
 
     /**
@@ -520,9 +481,13 @@ class Director implements TemplateGlobalProvider
             }
         }
 
-        $request = Injector::inst()->get(HTTPRequest::class);
-        if ($request && $host = $request->getHeader('Host')) {
-            return $host;
+        if (Injector::inst()->has(HTTPRequest::class)) {
+            /** @var HTTPRequest $request */
+            $request = Injector::inst()->get(HTTPRequest::class);
+            $host = $request->getHeader('Host');
+            if ($host) {
+                return $host;
+            }
         }
 
         // Check given header
@@ -581,9 +546,13 @@ class Director implements TemplateGlobalProvider
         }
 
         // Check the current request
-        $request = Injector::inst()->get(HTTPRequest::class);
-        if ($request && $host = $request->getHeader('Host')) {
-            return $request->getScheme() === 'https';
+        if (Injector::inst()->has(HTTPRequest::class)) {
+            /** @var HTTPRequest $request */
+            $request = Injector::inst()->get(HTTPRequest::class);
+            $scheme = $request->getScheme();
+            if ($scheme) {
+                return $scheme === 'https';
+            }
         }
 
         // Check default_base_url
