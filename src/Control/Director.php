@@ -6,6 +6,7 @@ use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Environment;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Kernel;
 use SilverStripe\Dev\Deprecation;
@@ -30,6 +31,7 @@ use SilverStripe\View\TemplateGlobalProvider;
 class Director implements TemplateGlobalProvider
 {
     use Configurable;
+    use Injectable;
     use HTTPMiddlewareAware;
 
     /**
@@ -134,7 +136,7 @@ class Director implements TemplateGlobalProvider
     ) {
         return static::mockRequest(
             function (HTTPRequest $request) {
-                return Injector::inst()->get(Director::class)->handleRequest($request);
+                return Director::singleton()->handleRequest($request);
             },
             $url,
             $postVars,
@@ -316,6 +318,12 @@ class Director implements TemplateGlobalProvider
         };
 
         foreach ($rules as $pattern => $controllerOptions) {
+            // Match pattern
+            $arguments = $request->match($pattern, true);
+            if ($arguments == false) {
+                continue;
+            }
+
             // Normalise route rule
             if (is_string($controllerOptions)) {
                 if (substr($controllerOptions, 0, 2) == '->') {
@@ -324,57 +332,39 @@ class Director implements TemplateGlobalProvider
                     $controllerOptions = array('Controller' => $controllerOptions);
                 }
             }
+            $request->setRouteParams($controllerOptions);
 
-            // Match pattern
-            $arguments = $request->match($pattern, true);
-            if ($arguments !== false) {
-                $request->setRouteParams($controllerOptions);
-                // controllerOptions provide some default arguments
-                $arguments = array_merge($controllerOptions, $arguments);
+            // controllerOptions provide some default arguments
+            $arguments = array_merge($controllerOptions, $arguments);
 
-                // Pop additional tokens from the tokenizer if necessary
-                if (isset($controllerOptions['_PopTokeniser'])) {
-                    $request->shift($controllerOptions['_PopTokeniser']);
-                }
+            // Pop additional tokens from the tokenizer if necessary
+            if (isset($controllerOptions['_PopTokeniser'])) {
+                $request->shift($controllerOptions['_PopTokeniser']);
+            }
 
-                // Handler for redirection
-                if (isset($arguments['Redirect'])) {
-                    $handler = function () use ($arguments) {
-                        // Redirection
-                        $response = new HTTPResponse();
-                        $response->redirect(static::absoluteURL($arguments['Redirect']));
-                        return $response;
-                    };
-                    break;
-                }
-
-                // Find the controller name
-                $controller = $arguments['Controller'];
-
-                // String = service name
-                if (is_string($controller)) {
-                    $controllerObj = Injector::inst()->get($controller);
-                // Array = service spec
-                } elseif (is_array($controller)) {
-                    $controllerObj = Injector::inst()->createFromSpec($controller);
-                } else {
-                    throw new \LogicException("Invalid Controller value '$controller'");
-                }
-
-                // Handler for calling a controller
-                $handler = function (HTTPRequest $request) use ($controllerObj) {
-                    try {
-                        // Apply the controller's middleware. We do this outside of handleRequest so that
-                        // subclasses of handleRequest will be called after the middlware processing
-                        return $controllerObj->callMiddleware($request, function ($request) use ($controllerObj) {
-                        return $controllerObj->handleRequest($request);
-                        });
-                    } catch (HTTPResponse_Exception $responseException) {
-                        return $responseException->getResponse();
-                    }
+            // Handler for redirection
+            if (isset($arguments['Redirect'])) {
+                $handler = function () use ($arguments) {
+                    // Redirection
+                    $response = new HTTPResponse();
+                    $response->redirect(static::absoluteURL($arguments['Redirect']));
+                    return $response;
                 };
                 break;
             }
+
+            /** @var RequestHandler $controllerObj */
+            $controllerObj = Injector::inst()->create($arguments['Controller']);
+
+            // Handler for calling a controller
+            $handler = function (HTTPRequest $request) use ($controllerObj) {
+                try {
+                    return $controllerObj->handleRequest($request);
+                } catch (HTTPResponse_Exception $responseException) {
+                    return $responseException->getResponse();
+                }
+            };
+            break;
         }
 
         // Call the handler with the configured middlewares
@@ -385,38 +375,6 @@ class Director implements TemplateGlobalProvider
         Injector::inst()->unregisterNamedObject(HTTPRequest::class);
 
         return $response;
-    }
-
-    /**
-     * Call the given request handler with the given middlewares
-     * Middlewares are specified as Injector service names
-     *
-     * @param $request The request to pass to the handler
-     * @param $middlewareNames The services names of the middlewares to apply
-     * @param $handler The request handler
-     */
-    protected static function callWithMiddlewares(HTTPRequest $request, array $middlewareNames, callable $handler)
-    {
-        $next = $handler;
-
-        if ($middlewareNames) {
-            $middlewares = array_map(
-                function ($name) {
-                    return Injector::inst()->get($name);
-                },
-                $middlewareNames
-            );
-
-            // Reverse middlewares
-            /** @var HTTPMiddleware $middleware */
-            foreach (array_reverse($middlewares) as $middleware) {
-                $next = function ($request) use ($middleware, $next) {
-                    return $middleware->process($request, $next);
-                };
-            }
-        }
-
-        return $next($request);
     }
 
     /**

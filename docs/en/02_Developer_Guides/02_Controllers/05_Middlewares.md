@@ -21,7 +21,7 @@ will deliberately return a different response, e.g. an error response or a redir
 	:::php
 	<?php
 
-    use SilverStripe\Control\HTTPMiddleware
+    use SilverStripe\Control\Middleware\HTTPMiddleware
 
 	class CustomMiddleware implements HTTPMiddleware {
 
@@ -54,8 +54,8 @@ use of it.
 
 ## Global middleware
 
-By adding the service or class name to the SilverStripe\Control\Director.middlewares array, a
-middleware will be executed on every request:
+By adding the service or class name to the Director::Middlewares property via injector,
+array, a middleware will be executed on every request:
 
 **mysite/_config/app.yml**
 
@@ -67,11 +67,10 @@ middleware will be executed on every request:
       - requestprocessors
     ---
     SilverStripe\Core\Injector\Injector:
-      SilverStripe\Control\HTTPMiddleware.director:
-        class: SilverStripe\Control\CompositeHTTPMiddleware
+      SilverStripe\Control\Director:
         properties:
           Middlewares:
-            - %$CustomMiddleware
+            CustomMiddleware: %$CustomMiddleware
 
 
 Because these are service names, you can configure properties into a custom service if you would
@@ -81,12 +80,10 @@ like:
 
     :::yml
     SilverStripe\Core\Injector\Injector:
-      SilverStripe\Control\HTTPMiddleware.director:
-        class: SilverStripe\Control\CompositeHTTPMiddleware
+      SilverStripe\Control\Director:
         properties:
           Middlewares:
-           - %$ConfiguredMiddleware
-    SilverStripe\Core\Injector\Injector:
+            CustomMiddleware: %$ConfiguredMiddleware
       ConfiguredMiddleware:
        class: 'CustomMiddleware'
        properties:
@@ -95,36 +92,26 @@ like:
 ## Route-specific middleware
 
 Alternatively, you can apply middlewares to a specific route. These will be processed after the
-global middlewares. You do this by specifying the "Middleware" property of the route rule:
+global middlewares. You can do this by using the `RequestHandlerMiddlewareAdapter` class
+as a replacement for your controller, and register it as a service with a `Middlewares`
+property. The controller which does the work should be registered under the
+`RequestHandler` property.
 
 **mysite/_config/app.yml**
 
     :::yml
-    SilverStripe\Control\Director:
-      rules:
-        special\section:
-          Controller: SpecialSectionController
-          Middleware: 'CustomMiddleware'
-
-
-If you need to apply multiple middleware you can use the `CompositeHTTPMiddleware`
-wrapper.
-
-
-    :::yml
     SilverStripe\Core\Injector\Injector:
       SpecialRouteMiddleware:
-        class: SilverStripe\Control\CompositeHTTPMiddleware
+        class: SilverStripe\Control\Middleware\RequestHandlerMiddlewareAdapter
         properties
+          RequestHandler: %$MyController
           Middlewares:
             - %$CustomMiddleware
             - %$AnotherMiddleware
     SilverStripe\Control\Director:
       rules:
         special\section:
-          Controller: SpecialSectionController
-          Middleware: 'CustomMiddleware'
-
+          Controller: SpecialRouteMiddleware
 
 ## API Documentation
 

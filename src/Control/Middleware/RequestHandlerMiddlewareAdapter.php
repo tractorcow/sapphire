@@ -1,0 +1,57 @@
+<?php
+
+namespace SilverStripe\Control\Middleware;
+
+use SilverStripe\Control\HTTPMiddlewareAware;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\RequestHandler;
+
+/**
+ * Decorates a request handler with the HTTP Middleware pattern
+ */
+class RequestHandlerMiddlewareAdapter extends RequestHandler
+{
+    use HTTPMiddlewareAware;
+
+    /**
+     * @var RequestHandler
+     */
+    protected $requestHandler = null;
+
+    public function __construct(RequestHandler $handler = null)
+    {
+        $this->setRequestHandler($handler);
+        parent::__construct();
+    }
+
+    public function Link($action = null)
+    {
+        return $this->getRequestHandler()->Link($action);
+    }
+
+    /**
+     * @return RequestHandler
+     */
+    public function getRequestHandler()
+    {
+        return $this->requestHandler;
+    }
+
+    /**
+     * @param RequestHandler $requestHandler
+     * @return $this
+     */
+    public function setRequestHandler($requestHandler)
+    {
+        $this->requestHandler = $requestHandler;
+        return $this;
+    }
+
+    public function handleRequest(HTTPRequest $request)
+    {
+        return $this->callMiddleware($request, function (HTTPRequest $request) {
+            $this->setRequest($request);
+            return $this->getRequestHandler()->handleRequest($request);
+        });
+    }
+}
