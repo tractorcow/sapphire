@@ -5,8 +5,8 @@ SilverStripe\Core\Injector\Injector:
   SilverStripe\Control\Director:
     properties:
       Middlewares:
-        TrustedProxyMiddleware: '%$SilverStripe\Control\TrustedProxyMiddleware'
-        AllowedHostsMiddleware: '%$SilverStripe\Control\AllowedHostsMiddleware'
+        TrustedProxyMiddleware: '%$SilverStripe\Control\Middleware\TrustedProxyMiddleware'
+        AllowedHostsMiddleware: '%$SilverStripe\Control\Middleware\AllowedHostsMiddleware'
         SessionMiddleware: '%$SilverStripe\Control\SessionMiddleware'
         RequestProcessor: '%$SilverStripe\Control\RequestProcessor'
         FlushMiddleware: '%$SilverStripe\Control\FlushMiddleware'

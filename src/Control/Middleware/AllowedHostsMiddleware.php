@@ -1,6 +1,11 @@
 <?php
 
-namespace SilverStripe\Control;
+namespace SilverStripe\Control\Middleware;
+
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPMiddleware;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
 
 /**
  * Secures requests by only allowing a whitelist of Host values

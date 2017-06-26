@@ -2,7 +2,6 @@
 
 namespace SilverStripe\Control\Middleware;
 
-use SilverStripe\Control\HTTPMiddlewareAware;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\RequestHandler;
 
